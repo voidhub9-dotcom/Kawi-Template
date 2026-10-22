@@ -15,9 +15,52 @@
 <img src="https://img.shields.io/badge/appearance-v1-FF4B9A?style=flat-square" alt="Appearance profile version 1" />
 </p>
 
-[**Quick start**](#get-started) &nbsp;·&nbsp; [**Appearance**](#make-it-yours) &nbsp;·&nbsp; [**Native API**](#native-api-reference) &nbsp;·&nbsp; [**Extended API index**](#extended-api-index) &nbsp;·&nbsp; [**AI guide**](llms.txt)
+[**Quick start**](#quick-start) &nbsp;·&nbsp; [**Screenshots**](#screenshots) &nbsp;·&nbsp; [**Full documentation**](#full-documentation) &nbsp;·&nbsp; [**AI guide**](llms.txt)
 
 </div>
+
+---
+
+> **Built for client executor scripts—not a Roblox Studio installation.** Load `Source.lua`, create a window, and build with the native Airflow-style API. Use `CreateKawiXDWindow` when you also want the Null Fire appearance methods.
+
+KawiXD keeps the familiar native surface—tabs, groupboxes, controls, search, flags, configs, themes, and motion—while adding Null Fire, Null Ice, and Null Mono appearance profiles, background styling, viewport fitting, and a draggable Dynamic Island.
+
+| <img src="https://api.iconify.design/lucide/panels-top-left.svg?color=%23FF4B9A" width="22" alt="Lucide panels-top-left" /> **Native foundation** | <img src="https://api.iconify.design/lucide/palette.svg?color=%23FF4B9A" width="22" alt="Lucide palette" /> **Appearance layer** | <img src="https://api.iconify.design/lucide/activity.svg?color=%23FF4B9A" width="22" alt="Lucide activity" /> **Responsive state** |
+| :--- | :--- | :--- |
+| Tabs, split groupboxes, tabboxes, controls, search, dependencies, tooltips, and persistence. | Live palettes, image backgrounds, tint, dim, fit, and portable appearance profiles. | Transitions, eased resizing, popup motion, touch-aware sizing, and Dynamic Island status updates. |
+
+## Screenshots
+
+| Dashboard | Dynamic Island |
+| :---: | :---: |
+| ![KawiXD dashboard](https://github.com/voidhub9-dotcom/Kawi-Template/releases/download/readme-assets-2026-10/kawixd-custom-background-3840x2160.png) | ![KawiXD Dynamic Island](https://github.com/voidhub9-dotcom/Kawi-Template/releases/download/readme-assets-2026-10/kawixd-dynamic-island-3840x2160.png) |
+
+*Real in-game captures, cropped/redacted and resized to 3840×2160 from 1280×720 originals; these are not native 4K captures.*
+
+## Quick start
+
+Load [`Source.lua`](Source.lua) in a compatible Roblox client executor, or run the standalone [`Example.lua`](Example.lua) showcase. This is Luau for client executors, not a Roblox Studio installation.
+
+```lua
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/voidhub9-dotcom/Kawi-Template/main/Source.lua"))()
+local Window = Library:CreateKawiXDWindow({ Name = "My Hub" })
+local Main = Window:CreateTab({ Name = "Main", Icon = "layout-grid" })
+local Controls = Main:CreateGroupbox({ Name = "Controls", Side = "Left" })
+Controls:CreateToggle({ Name = "Enabled", CurrentValue = true, Callback = print })
+Window:CreateAppearanceTab({ Name = "Appearance", Icon = "palette" })
+Window:SelectTab(Main)
+```
+
+`CreateKawiXDWindow` adds the appearance layer to the native window factory. Executor support for `loadstring`, HTTP, files, clipboard, and image APIs varies; use the full reference below for options, aliases, and compatibility details.
+
+## Files
+
+The four root files are [`Source.lua`](Source.lua), [`Example.lua`](Example.lua), [`Readme.MD`](Readme.MD), and [`llms.txt`](llms.txt).
+
+## Full documentation
+
+<details>
+<summary><strong>Open the complete guide, native API reference, extended API, Dynamic Island updates, and license</strong></summary>
 
 ---
 
@@ -2214,3 +2257,5 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
+</details>
