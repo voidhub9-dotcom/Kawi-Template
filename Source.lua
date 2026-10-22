@@ -17802,13 +17802,12 @@ end
 
 -- One table, not separate locals: the main chunk is at Luau's 200 local limit.
 local Mini = {
-    -- Sized after the iPhone 18 island: a slimmer, shorter pill sitting close
-    -- to the top edge, opening into a wide card with deep rounded corners.
-    Top = 8, -- gap from the top of the screen
-    Width = TOUCH and 176 or 168, -- compact
-    Height = TOUCH and 36 or 32,
-    Wide = 340, -- expanded and activity
-    Radius = 34, -- corner of the expanded and activity cards
+    -- Generous touch target, quiet compact silhouette, deliberate card spacing.
+    Top = 12,
+    Width = UserInputService.TouchEnabled and 224 or 212,
+    Height = UserInputService.TouchEnabled and 44 or 40,
+    Wide = 360,
+    Radius = 24,
     Bars = 4,
     Pinned = 6,
 }
@@ -17860,6 +17859,9 @@ function Window:_buildMiniBar()
         return self.MiniBar
     end
     local gui = self.Gui
+    local function wideWidth()
+        return math.max(1, math.min(Mini.Wide, gui.AbsoluteSize.X - 24))
+    end
 
     -- The island itself: a themed pill hanging from the top of the screen. It
     -- is a canvas so its rounded shape clips whatever layer is showing.
@@ -17876,11 +17878,14 @@ function Window:_buildMiniBar()
         Parent = gui,
     })
     local islandCorner = Library._fixedCorner(island, UDim.new(0, Mini.Height / 2))
+    local islandStroke = stroke(island, Theme.Stroke, 1)
+    islandStroke.Transparency = 0.32
+
     local islandScale = create("UIScale", { Parent = island })
     self._miniScale = islandScale
     -- How far the split bubble is out of the pill: drawn back in while the
     -- island is open, budded off again once it settles to the pill.
-    local merge = create("NumberValue", { Value = 1 })
+    local merge = create("NumberValue", { Value = 1, Parent = island })
     local mergeTween
     self._miniOrb = island
 
@@ -17891,7 +17896,7 @@ function Window:_buildMiniBar()
             Name = name,
             AnchorPoint = Vector2.new(0.5, 0),
             Position = UDim2.fromScale(0.5, 0),
-            Size = UDim2.new(0, Mini.Wide, 0, 400),
+            Size = UDim2.new(0, wideWidth(), 0, 400),
             BackgroundTransparency = 1,
             GroupTransparency = 1,
             Parent = island,
@@ -17910,16 +17915,19 @@ function Window:_buildMiniBar()
     })
     create("UIGradient", {
         Rotation = 90,
-        Color = ColorSequence.new(Color3.fromRGB(255, 255, 255), Color3.fromRGB(120, 120, 120)),
+        Transparency = NumberSequence.new({
+            NumberSequenceKeypoint.new(0, 0),
+            NumberSequenceKeypoint.new(1, 0.32),
+        }),
         Parent = compact,
     })
     -- The logo sits in a soft accent disc, like an app glyph.
     local logoDisc = create("Frame", {
         AnchorPoint = Vector2.new(0, 0.5),
-        Position = UDim2.new(0, 5, 0.5, 0),
-        Size = UDim2.fromOffset(Mini.Height - 10, Mini.Height - 10),
+        Position = UDim2.new(0, 6, 0.5, 0),
+        Size = UDim2.fromOffset(Mini.Height - 12, Mini.Height - 12),
         BackgroundColor3 = Theme.Accent,
-        BackgroundTransparency = 0.82,
+        BackgroundTransparency = 0.86,
         BorderSizePixel = 0,
         Parent = compact,
     })
@@ -17937,12 +17945,21 @@ function Window:_buildMiniBar()
     -- The script's name beside the logo, so the pill reads at a glance.
     local miniTitle = label({
         AnchorPoint = Vector2.new(0, 0.5),
-        Position = UDim2.new(0, Mini.Height + 2, 0.5, 0),
+        Position = UDim2.new(0, Mini.Height + 2, 0.5, -7),
         Size = UDim2.new(1, -Mini.Height - 2 - 72, 0, 18),
         Text = self.Title,
         TextSize = 13,
         FontFace = Fonts.Bold,
         TextColor3 = Theme.Text,
+        Parent = compact,
+    })
+    local miniSubtitle = label({
+        AnchorPoint = Vector2.new(0, 0.5),
+        Position = UDim2.new(0, Mini.Height + 2, 0.5, 9),
+        Size = UDim2.new(1, -Mini.Height - 76, 0, 13),
+        Text = "UI minimized",
+        TextSize = 10,
+        TextColor3 = Theme.Muted,
         Parent = compact,
     })
     local meter = create("Frame", {
@@ -18017,8 +18034,8 @@ function Window:_buildMiniBar()
     -- Expanded, on hover: the player's session.
     local expanded = layer("Expanded")
     local expandedList = create("Frame", {
-        Position = UDim2.fromOffset(16, 14),
-        Size = UDim2.new(1, -32, 0, 0),
+        Position = UDim2.fromOffset(18, 16),
+        Size = UDim2.new(1, -36, 0, 0),
         AutomaticSize = Enum.AutomaticSize.Y,
         BackgroundTransparency = 1,
         Parent = expanded,
@@ -18026,6 +18043,16 @@ function Window:_buildMiniBar()
     create("UIListLayout", {
         SortOrder = Enum.SortOrder.LayoutOrder,
         Padding = UDim.new(0, 8),
+        Parent = expandedList,
+    })
+    local eyebrow = label({
+        Name = "SessionEyebrow",
+        Size = UDim2.new(1, 0, 0, 16),
+        Text = "LIVE SESSION",
+        TextSize = 10,
+        FontFace = Fonts.Bold,
+        TextColor3 = Theme.Accent,
+        LayoutOrder = 0,
         Parent = expandedList,
     })
     -- The open card is the player's session, like a now-playing card: who
@@ -18059,7 +18086,7 @@ function Window:_buildMiniBar()
     self:_trackAvatar(face, facePlaceholder)
     local nameLabel = label({
         Position = UDim2.fromOffset(60, 5),
-        Size = UDim2.new(1, -150, 0, 20),
+        Size = UDim2.new(1, -142, 0, 20),
         TextSize = 15,
         FontFace = Fonts.Bold,
         TextColor3 = Theme.Text,
@@ -18068,7 +18095,7 @@ function Window:_buildMiniBar()
     self:_trackName(nameLabel, "Display")
     local tabLabel = label({
         Position = UDim2.fromOffset(60, 26),
-        Size = UDim2.new(1, -150, 0, 15),
+        Size = UDim2.new(1, -142, 0, 15),
         Text = "",
         TextSize = 12,
         FontFace = Fonts.Regular,
@@ -18081,7 +18108,7 @@ function Window:_buildMiniBar()
     local sessionLabel = label({
         AnchorPoint = Vector2.new(1, 0),
         Position = UDim2.new(1, 0, 0, 3),
-        Size = UDim2.fromOffset(90, 24),
+        Size = UDim2.fromOffset(78, 24),
         Text = "0s",
         TextSize = 20,
         FontFace = Fonts.Bold,
@@ -18092,7 +18119,7 @@ function Window:_buildMiniBar()
     label({
         AnchorPoint = Vector2.new(1, 0),
         Position = UDim2.new(1, 0, 0, 27),
-        Size = UDim2.fromOffset(90, 14),
+        Size = UDim2.fromOffset(78, 14),
         Text = "session",
         TextSize = 12,
         FontFace = Fonts.Regular,
@@ -18104,7 +18131,7 @@ function Window:_buildMiniBar()
     -- Two readouts: a large number with its unit, a caption, and a thin
     -- line under them that fills and tints with how healthy it is.
     local meters = create("Frame", {
-        Size = UDim2.new(1, 0, 0, 42),
+        Size = UDim2.new(1, 0, 0, 62),
         BackgroundTransparency = 1,
         LayoutOrder = 2,
         Parent = expandedList,
@@ -18112,12 +18139,15 @@ function Window:_buildMiniBar()
     local function meterPill(position, caption)
         local cell = create("Frame", {
             Position = position,
-            Size = UDim2.new(0.5, -10, 1, 0),
-            BackgroundTransparency = 1,
+            Size = UDim2.new(0.5, -4, 1, 0),
+            BackgroundColor3 = Theme.Surface2,
+            BorderSizePixel = 0,
             Parent = meters,
         })
+        corner(cell, UDim.new(0, 12))
         local value = label({
-            Size = UDim2.new(1, -70, 0, 24),
+            Position = UDim2.fromOffset(12, 7),
+            Size = UDim2.new(1, -24, 0, 24),
             Text = "",
             TextSize = 20,
             FontFace = Fonts.Bold,
@@ -18126,19 +18156,18 @@ function Window:_buildMiniBar()
             Parent = cell,
         })
         label({
-            AnchorPoint = Vector2.new(1, 0),
-            Position = UDim2.new(1, 0, 0, 6),
-            Size = UDim2.fromOffset(70, 14),
+            Position = UDim2.fromOffset(12, 33),
+            Size = UDim2.new(1, -24, 0, 12),
             Text = caption,
-            TextSize = 12,
+            TextSize = 10,
+            FontFace = Fonts.Bold,
             TextColor3 = Theme.Muted,
-            TextXAlignment = Enum.TextXAlignment.Right,
             Parent = cell,
         })
         local track = create("Frame", {
             AnchorPoint = Vector2.new(0, 1),
-            Position = UDim2.new(0, 0, 1, -4),
-            Size = UDim2.new(1, 0, 0, 3),
+            Position = UDim2.new(0, 12, 1, -8),
+            Size = UDim2.new(1, -24, 0, 2),
             BackgroundColor3 = Theme.Surface3,
             BorderSizePixel = 0,
             Parent = cell,
@@ -18154,66 +18183,44 @@ function Window:_buildMiniBar()
         return fill, value
     end
     local fpsFill, fpsValue = meterPill(UDim2.fromScale(0, 0), "FRAME RATE")
-    local pingFill, pingValue = meterPill(UDim2.new(0.5, 10, 0, 0), "PING")
+    local pingFill, pingValue = meterPill(UDim2.new(0.5, 4, 0, 0), "LATENCY")
 
-    -- Chips: a muted name and a bold value, the running count in accent.
+    -- Equal, bounded cells: long tab names truncate instead of overflowing.
     local chips = create("Frame", {
-        Size = UDim2.new(1, 0, 0, 30),
+        Size = UDim2.new(1, 0, 0, 42),
         BackgroundTransparency = 1,
         LayoutOrder = 3,
         Parent = expandedList,
     })
-    create("UIListLayout", {
-        FillDirection = Enum.FillDirection.Horizontal,
-        VerticalAlignment = Enum.VerticalAlignment.Center,
-        SortOrder = Enum.SortOrder.LayoutOrder,
-        Padding = UDim.new(0, 8),
-        Parent = chips,
-    })
     local function chipOf(order, name, color)
-        local chipFrame = create("Frame", {
-            Size = UDim2.fromOffset(0, 30),
-            AutomaticSize = Enum.AutomaticSize.X,
-            BackgroundColor3 = Theme.Surface2,
-            BorderSizePixel = 0,
-            LayoutOrder = order,
+        local cell = create("Frame", {
+            Position = UDim2.new((order - 1) / 3, order == 1 and 0 or 4, 0, 0),
+            Size = UDim2.new(1 / 3, -4, 1, 0),
+            BackgroundTransparency = 1,
             Parent = chips,
         })
-        corner(chipFrame, UDim.new(1, 0))
-        padding(chipFrame, 14, 14)
-        create("UIListLayout", {
-            FillDirection = Enum.FillDirection.Horizontal,
-            VerticalAlignment = Enum.VerticalAlignment.Center,
-            SortOrder = Enum.SortOrder.LayoutOrder,
-            Padding = UDim.new(0, 7),
-            Parent = chipFrame,
-        })
         label({
-            Size = UDim2.new(0, 0, 1, 0),
-            AutomaticSize = Enum.AutomaticSize.X,
-            Text = name,
-            TextSize = 12,
-            FontFace = Fonts.Regular,
+            Size = UDim2.new(1, -8, 0, 14),
+            Text = string.upper(name),
+            TextSize = 10,
+            FontFace = Fonts.Bold,
             TextColor3 = Theme.Muted,
-            TextTruncate = Enum.TextTruncate.None,
-            LayoutOrder = 1,
-            Parent = chipFrame,
+            Parent = cell,
         })
         return label({
-            Size = UDim2.new(0, 0, 1, 0),
-            AutomaticSize = Enum.AutomaticSize.X,
+            Position = UDim2.fromOffset(0, 18),
+            Size = UDim2.new(1, -8, 0, 18),
             Text = "",
-            TextSize = 12,
+            TextSize = 13,
             FontFace = Fonts.Bold,
             TextColor3 = color or Theme.Text,
-            TextTruncate = Enum.TextTruncate.None,
-            LayoutOrder = 2,
-            Parent = chipFrame,
+            TextTruncate = Enum.TextTruncate.AtEnd,
+            Parent = cell,
         })
     end
     local playersValue = chipOf(1, "Players")
-    local bigCount = chipOf(2, "Running", Theme.Accent)
-    local tabValue = chipOf(3, "Tab")
+    local bigCount = chipOf(2, "Active", Theme.Accent)
+    local tabValue = chipOf(3, "Current tab")
 
     -- Pinned statuses are no longer shown here; the holder stays so the
     -- refresh below has somewhere to keep its rows.
@@ -18241,14 +18248,32 @@ function Window:_buildMiniBar()
         LayoutOrder = 4,
         Parent = expandedList,
     })
-    local hint = label({
-        Size = UDim2.new(1, 0, 0, 14),
-        TextSize = 12,
-        FontFace = Fonts.Regular,
-        TextColor3 = Theme.Muted,
+    local restoreRow = create("Frame", {
+        Name = "RestoreHint",
+        Size = UDim2.new(1, 0, 0, 36),
+        BackgroundColor3 = Theme.Surface2,
+        BorderSizePixel = 0,
         LayoutOrder = 5,
         Parent = expandedList,
     })
+    corner(restoreRow, UDim.new(0, 10))
+    local hint = label({
+        Position = UDim2.fromOffset(12, 0),
+        Size = UDim2.new(1, -44, 1, 0),
+        TextSize = 12,
+        FontFace = Fonts.Bold,
+        TextColor3 = Theme.Text,
+        Parent = restoreRow,
+    })
+    local restoreIcon = create("ImageLabel", {
+        AnchorPoint = Vector2.new(1, 0.5),
+        Position = UDim2.new(1, -12, 0.5, 0),
+        Size = UDim2.fromOffset(16, 16),
+        BackgroundTransparency = 1,
+        ImageColor3 = Theme.Accent,
+        Parent = restoreRow,
+    })
+    applyIcon(restoreIcon, "arrow-up-right")
 
     -- Frame rate is counted every frame; the card's values refresh twice a
     -- second while it's open.
@@ -18355,7 +18380,9 @@ function Window:_buildMiniBar()
     })
 
     local hit = create("TextButton", {
+        Name = "RestoreIsland",
         Size = UDim2.fromScale(1, 1),
+        Selectable = true,
         BackgroundTransparency = 1,
         Text = "",
         AutoButtonColor = false,
@@ -18377,9 +18404,9 @@ function Window:_buildMiniBar()
 
     local function shapeFor(name)
         if name == "Expanded" then
-            return Vector2.new(Mini.Wide, math.floor(expandedList.AbsoluteSize.Y + 28 + 0.5)), Mini.Radius
+            return Vector2.new(wideWidth(), math.floor(expandedList.AbsoluteSize.Y + 32 + 0.5)), Mini.Radius
         elseif name == "Activity" then
-            return Vector2.new(Mini.Wide, math.floor(math.max(activityList.AbsoluteSize.Y, 34) + 26 + 0.5)), Mini.Radius
+            return Vector2.new(wideWidth(), math.floor(math.max(activityList.AbsoluteSize.Y, 34) + 26 + 0.5)), Mini.Radius
         end
         return Vector2.new(Mini.Width, Mini.Height), Mini.Height / 2
     end
@@ -18429,9 +18456,12 @@ function Window:_buildMiniBar()
     end
 
     local function setMode(name, instant)
+        expanded.Size = UDim2.new(0, wideWidth(), 0, 400)
+        activity.Size = UDim2.new(0, wideWidth(), 0, 400)
         local size, radius = shapeFor(name)
         local changed = name ~= mode
         mode = name
+        island:SetAttribute("IslandMode", name)
         modeToken += 1
         local token = modeToken
         local current = Vector2.new(island.Size.X.Offset, island.Size.Y.Offset)
@@ -18505,7 +18535,7 @@ function Window:_buildMiniBar()
                 target.Position = UDim2.new(0.5, 0, 0, 6)
             end
             task.delay(0.1, function()
-                if modeToken == token then
+                if modeToken == token and self.Minimized and not self._destroyed and island.Parent then
                     tween(target, { GroupTransparency = 0 }, 0.22, Enum.EasingStyle.Quad)
                     if target ~= compact then
                         tween(target, { Position = UDim2.fromScale(0.5, 0) }, 0.32, Enum.EasingStyle.Quint)
@@ -18654,10 +18684,10 @@ function Window:_buildMiniBar()
     -- Keeps the island on screen when the viewport changes size.
     table.insert(self._connections, gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
         if island.Visible and not dragging then
-            placeIsland(Vector2.new(island.Size.X.Offset, island.Size.Y.Offset), 0)
+            setMode(mode, true)
         end
     end))
-    hit.MouseButton1Click:Connect(function()
+    hit.Activated:Connect(function()
         if dragged then
             dragged = false
             return
@@ -18669,13 +18699,19 @@ function Window:_buildMiniBar()
     -- Restore hides the island under the pointer, so MouseLeave never fires.
     self._miniUnhover = function()
         hovered, pressed, activityLive = false, false, false
-        dragFrom, dragging = nil, false
+        dragFrom, dragAnchor, dragging, dragged = nil, nil, false, false
         activityToken += 1
+        hoverToken += 1
+        modeToken += 1
+        if sizeTween then sizeTween:Cancel() end
+        if cornerTween then cornerTween:Cancel() end
+        if positionTween then positionTween:Cancel() end
+        if mergeTween then mergeTween:Cancel() end
         islandScale.Scale = 1
         -- Clicked open while expanded: once the island has faded out, fold it
         -- back to the pill so the next minimize starts from it.
         task.delay(0.15, function()
-            if not self.Minimized then
+            if not self.Minimized and not self._destroyed and island.Parent then
                 setMode("Compact", true)
             end
         end)
@@ -18705,14 +18741,14 @@ function Window:_buildMiniBar()
         activityToken += 1
         local token = activityToken
         task.defer(function()
-            if activityToken == token and not hovered and not dragging then
+            if activityToken == token and self.Minimized and not self._destroyed and island.Parent and not hovered and not dragging then
                 setMode("Activity")
                 islandScale.Scale = 0.96
                 tween(islandScale, { Scale = 1 }, 0.4, Enum.EasingStyle.Back)
             end
         end)
         task.delay(math.clamp(tonumber(opts.Duration) or 3, 1.5, 5), function()
-            if activityToken == token then
+            if activityToken == token and not self._destroyed and island.Parent then
                 activityLive = false
                 if self.Minimized and not hovered then
                     settleMode()
@@ -18740,7 +18776,7 @@ function Window:_buildMiniBar()
     local pinValue = label({
         AnchorPoint = Vector2.new(1, 0.5),
         Position = UDim2.new(1, -14, 0.5, 0),
-        Size = UDim2.new(1, -52, 0, 18),
+        Size = UDim2.new(1, -Mini.Height - 16, 0, 18),
         TextSize = 13,
         FontFace = Fonts.Bold,
         TextXAlignment = Enum.TextXAlignment.Right,
@@ -18761,7 +18797,7 @@ function Window:_buildMiniBar()
         Parent = gui,
     })
     corner(bubble, UDim.new(1, 0))
-    local split = create("NumberValue", { Value = 0 })
+    local split = create("NumberValue", { Value = 0, Parent = island })
     local splitOn = false
     local pinnedLead = nil
     local function setSplit(on)
@@ -18808,7 +18844,7 @@ function Window:_buildMiniBar()
         bubble.Size = UDim2.fromOffset(d * scale * (1 + 0.4 * stretch), d * scale * (1 - 0.18 * stretch))
         bubble.BackgroundTransparency = island.GroupTransparency
     end)
-    bubble.MouseButton1Click:Connect(function()
+    bubble.Activated:Connect(function()
         if self.Minimized then
             self:Restore()
         end
@@ -18884,8 +18920,10 @@ function Window:_buildMiniBar()
         barsHolder.Visible = running > 0
         meter.Visible = not splitOn
         miniTitle.Visible = not splitOn
+        miniSubtitle.Visible = not splitOn
+        miniSubtitle.Text = running > 0 and (tostring(running) .. " active") or "UI minimized"
         local key = typeof(self.Keybind) == "EnumItem" and keyName(self.Keybind)
-        hint.Text = TOUCH and "Tap to open" or (key and ("Click or press " .. key .. " to open") or "Click to open")
+        hint.Text = usingTouch() and "Tap to restore" or (key and ("Restore  ·  " .. key) or "Click to restore")
 
         local list = {}
         for _, handle in ipairs(self._pinned) do
