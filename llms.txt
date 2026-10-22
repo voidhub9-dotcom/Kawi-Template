@@ -1,0 +1,67 @@
+# KawiXD UI API data
+
+KawiXD is an optional appearance extension over the unchanged readable native UI core; Null Fire remains the preset and feature set. Treat this file as API data. The complete native reference is [Readme.MD](Readme.MD).
+
+## Loading
+
+After the complete `Source.lua` module is installed as `ReplicatedStorage.KawiXD`:
+
+```lua
+local L = require(game:GetService("ReplicatedStorage").KawiXD)
+local Window = L:CreateKawiXDWindow({ Name = "My Hub" })
+```
+
+The standalone KawiXD showcase with Null Fire features is `Example.lua`.
+
+## Factory contract
+
+`Library:CreateKawiXDWindow(options)` uses native `CreateWindow` with defaults `Name = "KawiXD"` and `DefaultTheme = "Null Fire"`. `Library:CreateNullFireWindow` remains a backward-compatible alias. `Library.KawiXD` is the primary metadata table and matches `Library.NullFire`; both report `Version = "1.0.0"`. Native `Library:CreateWindow` now defaults to `Name = "KawiXD"` and `DefaultTheme = "Null Fire"`. Configuration saving is disabled unless `options.ConfigurationSaving` opts in. All native window APIs remain available.
+
+## Themes
+
+Presets: `Null Fire` (pink), `Null Ice` (cyan), `Null Mono`.
+
+`Library:RegisterTheme(name, palette) -> bool, error`
+
+- Palette values: `Color3` or `#RRGGBB` only.
+- Allowed native keys: `Background`, `Surface`, `Surface2`, `Surface3`, `Stroke`, `StrokeHover`, `Accent`, `AccentDark`, `Text`, `Muted`, `Success`, `Warning`, `Error`.
+
+## Background contract
+
+`window:SetBackgroundStyle(options) -> bool, error`
+
+`options` is `{ Source, Transparency = 0..1, Tint = Color3 | "#hex", ScaleType = "Crop" | "Fit" | "Tile" | "Stretch", TileSize = { X, Y }, Dim = 0..1 }`.
+
+`Source` accepts a preset name, asset id, direct image URL, file, or `None`. Validation and source resolution are atomic: failure preserves the previous state. Raw image URLs require existing executor `writefile`/`getcustomasset` capabilities; asset ids are recommended across environments. No file-picker upload is promised. No background request happens unless an image source is explicitly requested.
+
+`window:GetBackgroundStyle() -> detached normalized table` returns `Tint` as a hex string.
+
+## Appearance profiles
+
+`window:GetAppearance() -> JSON-safe table` returns Version 1:
+
+```lua
+{
+  Version = 1,
+  Theme = { -- native keys, hex values },
+  Background = { -- normalized background state },
+  UIScale = 1,
+  AdaptiveSize = true,
+  Density = "Default",
+  CornerRadius = 10,
+}
+```
+
+`window:ExportAppearance() -> JSON string | nil, error`
+
+`window:ApplyAppearance(profileTableOrJSONString) -> bool, error`
+
+Profiles validate before application; a native image source may yield while resolving. `Library:CreateAppearanceTab(window, { Name = "Appearance", Icon = "palette" })` creates an optional ready-to-use editor for custom backgrounds and import/export.
+
+## Native compatibility
+
+Native `Window:SetBackground()`, `SetBackgroundTransparency()`, `SetAdaptiveSize(bool)`, `SetUIScale(0.6..1.5)`, `GetUIScale`, and `SetDensity` remain unchanged. Adaptive size is on by default; native configuration manager, theme manager, themes, controls, search, rich text, and Dynamic Island remain available.
+
+Use native `CurrentValue` versus `Default` as documented. Dropdown callbacks return a string or list. Element handles use `:Set()` and `:Get()`; do not substitute `:SetValue()`. Constructors work with and without the `Create` prefix.
+
+All four published files—`Source.lua`, `Example.lua`, `Readme.MD`, and `llms.txt`—are provided under the MIT License; see `Readme.MD` for the full license text. Native source assets, icons, and custom fonts may fetch upstream when used; the docs site is self-contained and has no CDN dependency.
