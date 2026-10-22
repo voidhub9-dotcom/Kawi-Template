@@ -5001,6 +5001,7 @@ function Library.Window(_, opts)
         self:_buildBackdrop(type(opts.Backdrop) == "table" and opts.Backdrop or {})
     end
     self._introDone = false
+    self:_buildOpenEffects(opts.OpenEffects)
 
     table.insert(Library.Windows, self)
 
@@ -17183,6 +17184,7 @@ function Window:SelectTab(tab)
         return
     end
     local previous = self.CurrentTab
+    self._openEffectKick = 1
     self:_resetSearch()
     self:_closePopups()
     self.CurrentTab = tab
@@ -17433,6 +17435,142 @@ local function seedParticle(kind, particle, width, height, anywhere)
         label.ImageColor3 = particle.Color
             or (kind == "Rain" and Color3.fromRGB(190, 210, 245) or Color3.new(1, 1, 1))
     end
+end
+
+-- Open-window motion: no full-screen filters, no per-frame descendant scans.
+-- Everything is decorative and input-transparent; work pauses while folded.
+function Window:_buildOpenEffects(enabled)
+    self._openEffectsEnabled = enabled ~= false
+    local root, body = self.Root, self.Body
+    local effects = {}
+    self._openEffects = effects
+    local function decoration(name, parent, z)
+        return create("Frame", {
+            Name = name, Size = UDim2.fromScale(1, 1),
+            BackgroundTransparency = 1, BorderSizePixel = 0,
+            Active = false, Selectable = false, ZIndex = z,
+            Visible = false, Parent = parent,
+        })
+    end
+    -- A soft accent halo behind the window, not behind the text.
+    effects.Glow = create("ImageLabel", {
+        Name = "OpenAccentGlow", Position = UDim2.fromOffset(-18, -18),
+        Size = UDim2.new(1, 36, 1, 36), BackgroundTransparency = 1,
+        Image = Assets.Shadow, ImageColor3 = Theme.Accent,
+        ImageTransparency = 0.92, ScaleType = Enum.ScaleType.Slice,
+        SliceCenter = Rect.new(49, 49, 450, 450),
+        Active = false, Selectable = false, ZIndex = 0,
+        Visible = false, Parent = root,
+    })
+    -- A single-pixel travelling reflection; never changes BodyStroke.
+    effects.Rim = decoration("OpenEdgeReflection", root, 4)
+    corner(effects.Rim, UDim.new(0, 10))
+    effects.RimStroke = stroke(effects.Rim, Theme.Accent, 1)
+    effects.RimStroke.Transparency = 0.58
+    effects.RimGradient = create("UIGradient", {
+        Transparency = NumberSequence.new({
+            NumberSequenceKeypoint.new(0, 0.98),
+            NumberSequenceKeypoint.new(0.4, 0.82),
+            NumberSequenceKeypoint.new(0.5, 0.12),
+            NumberSequenceKeypoint.new(0.6, 0.82),
+            NumberSequenceKeypoint.new(1, 0.98),
+        }), Parent = effects.RimStroke,
+    })
+    -- A faint colour wash under all controls and their existing solid surfaces.
+    effects.Wash = decoration("OpenAmbientWash", body, 0)
+    effects.Wash.Size = UDim2.new(1, 0, 0.3, 0)
+    effects.Wash.BackgroundColor3 = Theme.Accent
+    effects.Wash.BackgroundTransparency = 0.96
+    create("UIGradient", {
+        Rotation = 90, Transparency = NumberSequence.new(0, 1),
+        Parent = effects.Wash,
+    })
+    effects.Rail = decoration("OpenHeaderShimmer", body, 4)
+    effects.Rail.Position = UDim2.fromOffset(12, 0)
+    effects.Rail.Size = UDim2.new(1, -24, 0, 1)
+    effects.Rail.BackgroundColor3 = Theme.Accent
+    effects.Rail.BackgroundTransparency = 0.35
+    effects.RailGradient = create("UIGradient", {
+        Transparency = NumberSequence.new({
+            NumberSequenceKeypoint.new(0, 1),
+            NumberSequenceKeypoint.new(0.42, 1),
+            NumberSequenceKeypoint.new(0.5, 0.1),
+            NumberSequenceKeypoint.new(0.58, 1),
+            NumberSequenceKeypoint.new(1, 1),
+        }), Parent = effects.Rail,
+    })
+    -- One reusable pulse, clipped to the window and with no input handlers.
+    effects.Feedback = decoration("OpenTouchFeedback", root, 6)
+    effects.Feedback.ClipsDescendants = true
+    corner(effects.Feedback, UDim.new(0, 10))
+    effects.Ring = decoration("TouchRing", effects.Feedback, 6)
+    effects.Ring.AnchorPoint = Vector2.new(0.5, 0.5)
+    corner(effects.Ring, UDim.new(1, 0))
+    effects.RingStroke = stroke(effects.Ring, Theme.Accent, 1)
+    effects.RingStroke.Transparency = 1
+    effects.TabStroke = stroke(self.Indicator, Theme.Accent, 1)
+    effects.TabStroke.Transparency = 1
+    self._openEffectClock, self._openEffectKick = 0, 0
+    self._openEffectPulse = 1
+    local accumulator, wasShown, lastPress = 0, false, -1
+    self:_listen("Began", function(input)
+        if not self._openEffectsEnabled or not self._introDone or not self.Open
+            or self.Minimized or not root.Visible or not isPress(input) then
+            return
+        end
+        local now = os.clock()
+        local point = Vector2.new(input.Position.X, input.Position.Y)
+        if now - lastPress < 0.12 or not pointInside(point, root) then return end
+        lastPress = now
+        local fit = math.max(self.Scale.Scale, 0.01)
+        local offset = (point - root.AbsolutePosition) / fit
+        effects.Ring.Position = UDim2.fromOffset(offset.X, offset.Y)
+        self._openEffectPulse = 0
+        self._openEffectKick = math.max(self._openEffectKick, 0.35)
+    end)
+    table.insert(self._frameSteps, function(deltaTime)
+        local shown = self._openEffectsEnabled and self._introDone and self.Open
+            and not self.Minimized and root.Visible and self.Gui.Enabled and not self._destroyed
+        if shown ~= wasShown then
+            wasShown = shown
+            for _, name in ipairs({ "Glow", "Rim", "Wash", "Rail", "Feedback" }) do
+                effects[name].Visible = shown
+            end
+            self._indicatorPill.Visible = shown
+            effects.TabStroke.Transparency = shown and 0.78 or 1
+            if not shown then
+                effects.Ring.Visible = false
+                self._openEffectPulse = 1
+            end
+        end
+        if not shown then return end
+        accumulator += math.min(deltaTime, 0.1)
+        if accumulator < 1 / 30 then return end
+        local step = accumulator
+        accumulator = 0
+        self._openEffectClock += step
+        self._openEffectKick = math.max(0, self._openEffectKick - step * 1.6)
+        local clock, kick = self._openEffectClock, self._openEffectKick
+        effects.Glow.ImageTransparency = 0.925 - math.sin(clock * 0.9) * 0.014 - kick * 0.045
+        effects.RimGradient.Rotation = (clock * 15) % 360
+        effects.RailGradient.Offset = Vector2.new(math.sin(clock * 0.42) * 0.7, 0)
+        effects.Wash.BackgroundTransparency = 0.963 - math.sin(clock * 0.55) * 0.006
+        effects.TabStroke.Transparency = 0.8 - kick * 0.3
+        local pulse = math.min(1, self._openEffectPulse + step / 0.45)
+        self._openEffectPulse = pulse
+        effects.Ring.Visible = pulse < 1
+        if pulse < 1 then
+            local size = 10 + 46 * (1 - (1 - pulse) ^ 3)
+            effects.Ring.Size = UDim2.fromOffset(size, size)
+            effects.RingStroke.Transparency = 0.58 + pulse * 0.42
+        end
+    end)
+end
+
+-- A lightweight escape hatch for scripts that prefer completely still chrome.
+function Window:SetOpenEffects(enabled)
+    self._openEffectsEnabled = enabled ~= false
+    return self._openEffectsEnabled
 end
 
 function Window:_buildBackdrop(opts)
