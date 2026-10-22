@@ -1,38 +1,72 @@
 <div align="center">
 
-# KawiXD UI
+<img src="https://api.iconify.design/lucide/flame.svg?color=%23FF4B9A" width="60" height="60" alt="Lucide flame" />
 
-### Your interface. Your colors. Your background.
+# KawiXD
 
-A single-file Luau UI library for Roblox client executor scripts, based on Airflow UI with the Null Fire appearance layer: native controls, live themes, custom backgrounds, and portable appearance profiles.
+**A single-file Roblox client UI. An Airflow foundation. A look of your own.**
 
-**Luau · Appearance profiles v1 · Touch-aware scaling**
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&amp;weight=500&amp;size=20&amp;duration=2800&amp;pause=1200&amp;color=FF4B9A&amp;center=true&amp;vCenter=true&amp;width=760&amp;height=48&amp;lines=Your+interface.+Your+colors.+Your+background.%3BAirflow+foundation.+Null+Fire+appearance." width="760" height="48" alt="Your interface. Your colors. Your background. Airflow foundation. Null Fire appearance." />
 
-[Get started](#get-started) · [Appearance](#make-it-yours) · [API reference](#native-api-reference) · [Example](Example.lua)
+<p>
+<img src="https://img.shields.io/badge/runtime-Luau-FF4B9A?style=flat-square" alt="Runtime: Luau" />
+<img src="https://img.shields.io/badge/environment-client_executor-80E2EA?style=flat-square" alt="Environment: client executor" />
+<img src="https://img.shields.io/badge/distribution-4_files-E6DEF3?style=flat-square" alt="Distribution: four files" />
+<img src="https://img.shields.io/badge/appearance-v1-FF4B9A?style=flat-square" alt="Appearance profile version 1" />
+</p>
+
+[**Quick start**](#get-started) &nbsp;·&nbsp; [**Appearance**](#make-it-yours) &nbsp;·&nbsp; [**Native API**](#native-api-reference) &nbsp;·&nbsp; [**Extended API index**](#extended-api-index) &nbsp;·&nbsp; [**AI guide**](llms.txt)
 
 </div>
 
 ---
 
-## A familiar foundation. More control.
+> **Built for client executor scripts—not a Roblox Studio installation.** Load `Source.lua`, create a window, and build with the native Airflow-style API. Use `CreateKawiXDWindow` when you also want the Null Fire appearance methods.
 
-KawiXD keeps the original Airflow sidebar, split groupboxes, controls, search, animations, and Dynamic Island minimize behavior. Its optional **Null Fire appearance layer** adds validated styling and explicit profile import/export—without introducing a new control API.
-
-| Build your interface | Make it your own |
-| :--- | :--- |
-| Tabs, sub-tabs, groupboxes, and tabboxes | **Null Fire**, **Null Ice**, and **Null Mono** themes |
-| Toggles, sliders, dropdowns, inputs, and more | Register custom palettes with hex colors or `Color3` |
-| Tables, logs, notifications, and dialogs | Image backgrounds with tint, dimming, crop, fit, or tiling |
-| Search, configs, and Dynamic Island minimize | JSON appearance profiles and a ready-made Appearance tab |
-| Adaptive sizing and manual UI scaling | Original layout and native control methods retained |
+<table>
+<tr>
+<td width="33%" valign="top">
+<img src="https://api.iconify.design/lucide/panels-top-left.svg?color=%23FF4B9A" width="26" height="26" alt="Lucide panels-top-left" />
+<h3>Keep the foundation</h3>
+<p>Sidebar tabs, sub-tabs, split groupboxes, tabboxes, controls, and window-wide search. Familiar native methods, not a replacement widget API.</p>
+</td>
+<td width="33%" valign="top">
+<img src="https://api.iconify.design/lucide/palette.svg?color=%23FF4B9A" width="26" height="26" alt="Lucide palette" />
+<h3>Make it yours</h3>
+<p>Null Fire, Null Ice, and Null Mono alongside native themes. Live palettes, image backgrounds, tint, dim, fit, and portable appearance profiles.</p>
+</td>
+<td width="33%" valign="top">
+<img src="https://api.iconify.design/lucide/activity.svg?color=%23FF4B9A" width="26" height="26" alt="Lucide activity" />
+<h3>Stay in motion</h3>
+<p>Native window transitions, eased resizing, popup motion, and the draggable Dynamic Island minimize. Pin live statuses without building another overlay.</p>
+</td>
+</tr>
+<tr>
+<td valign="top">
+<img src="https://api.iconify.design/lucide/sliders-horizontal.svg?color=%23FF4B9A" width="26" height="26" alt="Lucide sliders-horizontal" />
+<h3>Controls with depth</h3>
+<p>Toggles, sliders, steppers, dropdowns, keybinds, color pickers, editable tables, logs, readouts, dependencies, and tooltips.</p>
+</td>
+<td valign="top">
+<img src="https://api.iconify.design/lucide/save.svg?color=%23FF4B9A" width="26" height="26" alt="Lucide save" />
+<h3>State that travels</h3>
+<p>Native flags, configs, share codes, and autoload. Separate JSON appearance import/export for a complete look, including extra background styling.</p>
+</td>
+<td valign="top">
+<img src="https://api.iconify.design/lucide/smartphone.svg?color=%23FF4B9A" width="26" height="26" alt="Lucide smartphone" />
+<h3>Fit the viewport</h3>
+<p>Touch-aware controls, adaptive sizing, manual UI scale, and density presets. Viewport fitting—not physical DPI detection.</p>
+</td>
+</tr>
+</table>
 
 ## Get started
 
-### 1. Install the library
+### 1. Load the library
 
 Load [`Source.lua`](Source.lua) directly in a compatible Roblox client executor. It returns the complete library, including the Airflow-derived core and the Null Fire appearance layer. This is not a Roblox Studio project: no ModuleScript installation, ReplicatedStorage setup, or LocalScript is required. The `.lua` filename contains Roblox Luau code.
 
-The loading pattern is the same as the original Airflow docs: `loadstring(game:HttpGet(url))()`. Your executor must provide `loadstring` and client HTTP access. File configs, clipboard actions, and URL/file images depend on the corresponding executor APIs; do not assume every executor supports them.
+The loading pattern matches the original Airflow docs: `loadstring(game:HttpGet(url))()`. Your executor must provide `loadstring` and client HTTP access. File configs, clipboard actions, and URL/file images depend on the corresponding executor APIs; do not assume every executor supports them.
 
 ### 2. Create your first window
 
@@ -43,7 +77,7 @@ local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/voidh
 
 local Window = Library:CreateKawiXDWindow({
     Name = "My Hub",
-    ConfigurationSaving = { Enabled = false },
+    ConfigurationSaving = { FolderName = "MyHub" }, -- Enabled is not a persistence switch
 })
 
 local Main = Window:CreateTab({
@@ -88,19 +122,21 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/voidhub9-dotcom/Kawi-
 
 ### Window defaults
 
-`CreateKawiXDWindow(options)` uses the native window factory and adds appearance methods. Its defaults are `Name = "KawiXD"`, `DefaultTheme = "Null Fire"` when no theme is supplied, and an explicit `ConfigurationSaving = { Enabled = false, FolderName = "KawiXD" }` option when no configuration options are supplied. Native window options remain available. Plain `Library:CreateWindow(options)` is still the native factory: it does not attach the appearance methods and does not inject the `Null Fire` default. On a fresh library instance the native palette is `Midnight`; the native title and config folder default to `KawiXD`. Previously selected library themes and a saved player default can affect the starting palette.
+`CreateKawiXDWindow(options)` uses the native window factory and adds appearance methods. Its defaults are `Name = "KawiXD"`, `DefaultTheme = "Null Fire"` when no theme is supplied, and an explicit `ConfigurationSaving = { Enabled = false, FolderName = "KawiXD" }` option when no configuration options are supplied. **Important:** the source does not read `ConfigurationSaving.Enabled`; this supplied option does not disable native persistence or file APIs. Native window options remain available. Plain `Library:CreateWindow(options)` is still the native factory: it does not attach the appearance methods and does not inject the `Null Fire` default. On a fresh library instance the native palette is `Midnight`; the native title and config folder default to `KawiXD`. Previously selected library themes and a saved player default can affect the starting palette.
 
 `CreateNullFireWindow` remains a backward-compatible alias. `Library.KawiXD` and `Library.NullFire` refer to the same metadata table, reporting version `1.0.0`.
 
 ## Make it yours
 
+**Start with a palette. Add a background. Export the complete look.** These methods are attached by `CreateKawiXDWindow`; native controls stay unchanged.
+
 ### Pick a palette
 
 | Preset | Character |
 | :--- | :--- |
-| `Null Fire` | Pink accent on dark surfaces; the KawiXD factory default |
-| `Null Ice` | Cyan accent on dark surfaces |
-| `Null Mono` | Neutral monochrome palette |
+| `Null Fire` | ![Null Fire](https://img.shields.io/badge/-%23FF4B9A-FF4B9A?style=flat-square) Pink accent on dark surfaces; the enhanced factory default |
+| `Null Ice` | ![Null Ice](https://img.shields.io/badge/-%2380E2EA-80E2EA?style=flat-square) Cyan accent on dark surfaces |
+| `Null Mono` | ![Null Mono](https://img.shields.io/badge/-%23E6DEF3-E6DEF3?style=flat-square) Neutral monochrome palette |
 
 ```lua
 Library:SetTheme("Null Ice")
@@ -203,6 +239,8 @@ Adaptive sizing is enabled by default and fits the window to the viewport, inclu
 > **Shared versus per-window:** Themes, density, and corner radius are shared by windows from the same library instance. Background styling is per-window. Importing an appearance profile can therefore recolor sibling windows.
 
 ## Files
+
+**One library. One standalone showcase. Two documentation files.**
 
 Exactly four files make up this distribution:
 
@@ -1250,16 +1288,16 @@ Input:Set("Pookie")
 | `Icon` | string \| number \| table | — | Icon inside the box. |
 | `PlaceholderText` | string | `""` | Shown while empty. |
 | `CurrentValue` | string | `""` | The initial text. |
-| `Numeric` | boolean | `false` | Clears the box and skips the callback if the text is not a number. |
+| `Numeric` | boolean | `false` | Parses numeric text, including supported separators/suffixes; invalid edits revert to the last valid text and skip the callback. `Get()` and callbacks return a number or nil in numeric mode. |
 | `Flag` | string | — | The save key. |
-| `Callback` | function | — | Runs when focus is lost. The second argument is whether Enter was pressed. |
+| `Callback` | function | — | Runs on focus loss or a non-silent programmatic `Set`. Receives text (or a number in numeric mode) and whether Enter was pressed. |
 
 ### Handle
 
 | Member | Description |
 | --- | --- |
-| `Set(text)` | Replace the text. |
-| `Get()` | The current text. |
+| `Set(text, silent?)` | Replace the text; `true` skips the callback. Numeric mode validates/parses it. |
+| `Get()` | Current text in normal mode; parsed number or nil in numeric mode. |
 
 ---
 
@@ -1634,6 +1672,8 @@ Toggles, sliders, steppers, dropdowns, inputs, keybinds and colour pickers creat
 
 ## Configs
 
+`ConfigurationSaving.FolderName` selects the executor folder. `Enabled` is accepted in examples but is not read by this implementation; do not rely on `Enabled = false` to suppress writes. `SetIgnoreFlags` excludes named flags from config saving/loading, and `SetLoadingOrder` controls application order; see the extended index.
+
 > Save every flagged element to a file, load it back, and pick one to autoload.
 
 ```lua
@@ -1859,6 +1899,280 @@ Whole-value colours take the same forms everywhere: a theme key string, a `Color
 | --- | --- |
 | `Library.Colorize(text, color)` | Wraps `text` in a colour. A theme key gives a tag that follows the theme; anything else is baked in. `Library:Colorize(...)` works too. |
 
+## Extended API index
+
+The walkthrough above shows the standard options and usage. This index adds **source-exact signatures, return values, aliases, and less-visible helpers**. Receiver names matter: a `Library` method, native `Window` method, enhanced window method, manager method, and element handle are not interchangeable. Underscore-prefixed implementation helpers and Roblox Instance methods are not supported library API.
+
+**Behavior to know:** `ConfigurationSaving.Enabled` is never read by this source. The enhanced factory supplies `Enabled = false` as an option, but that is **not a file-write kill switch**. Native config methods, remembered UI settings, and hidden size flags remain available when executor file APIs exist. Appearance export itself is explicit JSON generation and does not write a file.
+
+<details>
+<summary><strong>Library, window, container, config, theme, and background methods</strong></summary>
+
+### Library
+
+| Signature | Behavior / return | Verified details |
+|---|---|---|
+| `Library:Window(options)` | Creates and returns a native `Window`. | `Library.CreateWindow` is an alias. The options normalizer maps `Name` → `Title`, `LoadingSubtitle` → `Subtitle`, and `ToggleUIKeybind` → `Keybind`; a string `Keybind` is converted with `Enum.KeyCode[key]`. |
+| `Library:CreateWindow(options)` | Alias of `Library:Window`; returns a native window. | It does not install the KawiXD appearance layer or force a theme. |
+| `Library:CreateKawiXDWindow(options)` | Creates and returns a window with the KawiXD appearance layer installed. | Defaults `DefaultTheme` to `Null Fire` only when no theme is supplied. `CreateNullFireWindow` is an alias. |
+| `Library:CreateAppearanceTab(window, options)` | Creates and returns an appearance-editor tab for the supplied window. | The appearance methods must already be installed; intended for a window from `CreateKawiXDWindow`. |
+| `Library:Notify(options)` | Forwards to the most recently created window and returns its notification handle, or `nil` if there is no window. | `options.Text`/`Message` normalize to `Content`; `Image` normalizes to `Icon`. |
+| `Library:Confirm(options)` / `Library:Dialog(options)` | Forwards to the most recently created window and returns that window method's result, or `nil` with no window. | These forwarders are real source methods. |
+| `Library:LoadFont(options)` | Downloads configured font files, registers custom assets, updates `Library.Fonts`, and returns `true`; returns `false` when required file/custom-asset APIs are unavailable. | `Name` selects a preset (currently `ValleySans`); `Weights` may supply a weight map. |
+| `Library:PreloadIcons()` | Loads and caches Lucide icons; returns the loaded table, or `false` after warning when loading fails. | Requires executor HTTP and `loadstring`. |
+| `Library:SetDensity(mode)` | Sets shared layout density; use `Window:GetDensity()` to read it. | Accepted modes are `Compact`, `Default`, and `Comfortable` (case-insensitive); invalid input is replaced by `Default`. There is no `Library:GetDensity()` method. Setter returns the selected mode. `Window:SetDensity` forwards to this method and `Window:GetDensity` returns the shared mode. |
+| `Library:SetCornerRadius(pixels[, instant])` / `Library:GetCornerRadius()` | Sets/gets the shared corner radius. | Input is rounded and clamped to **0–20 pixels**. Setter returns the settled integer radius; `instant` selects immediate vs tweened repaint. |
+| `Library:SetTheme(theme[, instant])` / `Library:GetTheme()` | Applies a preset name or color table / returns a detached current color table. | A string must name an existing `ThemePresets` entry; a table is accepted. Invalid type/name returns `false`; successful set returns `true`. |
+| `Library:SetDefaultTheme(theme)` / `Library:GetDefaultTheme()` | Sets/gets the default theme value. | `theme` may be a preset **name string**, a palette **table**, or `nil`; setter returns `true` or the result of applying the theme. A saved player default can take precedence when a window is created. |
+| `Library:RegisterTheme(name, colors)` | Registers a merged named theme; returns `true`, or `false, error`. | Validation and color conversion are performed by the implementation; unknown/invalid entries are rejected. |
+| `Library:Colorize(text, color)` | Returns rich-text markup, or the original text when the color cannot be resolved. | `color` may be a theme tone name, `Color3`, or supported color string. It does not display text. |
+| `Library:Destroy()` / `Library:Unload()` | Destroys all windows created by the library. | `Unload` is an alias. |
+| `Library.Flags` / `Library.Windows` / `Library.Theme` / `Library.ThemePresets` / `Library.Touch` | Public state tables/flag registries exposed by the source. | These are live implementation tables, not detached snapshots. |
+
+### Window: navigation, visibility, sizing, and presentation
+
+| Signature | Behavior / return | Verified details |
+|---|---|---|
+| `Window:Tab(options[, icon])` | Creates and returns a tab. | `Window.CreateTab` is an alias. |
+| `Window:SelectTab(tab)` | Selects the supplied tab object and transitions to it. | The body accepts a tab object; it does **not** resolve a name or numeric index. It resets search and closes popups. Passing an unsupported value is not a documented API contract. |
+| `Window:Toggle([open])` | Sets `Open` to the supplied boolean when given; otherwise toggles it. | No documented return. |
+| `Window:Minimize()` / `Window:Restore()` / `Window:SetMinimized(value)` | Minimizes/restores or sets minimized state. | `SetMinimized` uses the supplied truth value; no documented return. |
+| `Window:SetIslandDraggable(enabled)` / `Window:ResetIslandPosition()` | Enables island dragging / resets the remembered island position. | No documented return. `IslandDraggable = false` also locks it at construction. |
+| `Window:SetKeepOnScreen(enabled)` | Sets `KeepOnScreen` to `enabled ~= false` and clamps when enabled. | No documented return; default is enabled. |
+| `Window:SetKeybind(key)` | Replaces the window keybind. | Constructor options accept a string key name and convert it to `Enum.KeyCode`; the setter stores the supplied value directly, so use an `Enum.KeyCode` (or `nil`) rather than relying on setter string conversion. |
+| `Window:SetAdaptiveSize(enabled)` / `Window:GetAdaptiveSize()` | Enables/gets adaptive viewport fitting. | Getter returns boolean; setter has no documented return. |
+| `Window:SetUIScale(value)` / `Window:GetUIScale()` | Sets/gets UI scale. | Setter clamps to **0.6–1.5**; getter returns the requested scale, while adaptive fitting can additionally affect rendered scale. |
+| `Window:GetSize()` / `Window:SetSize(size[, instant])` | Gets current pixel size / applies a `Vector2` size subject to window constraints. | `instant` controls resizing animation. `SaveSize` is handled by the configuration manager when configured. |
+| `Window:SetDragStyle(style)` / `Window:GetDragStyle()` | Sets/gets drag skeleton style. | Accepted styles are exactly **`Outline`, `Brackets`, `Ghost`, `Frame`, `Off`**. Any other value falls back to `Outline`; setter returns the settled style. `DragSkeleton = false` maps to `Off`. |
+| `Window:SetIslandStyle(style)` / `Window:GetIslandStyle()` | Sets/gets minimized-island presentation. | Accepted styles are `Show on Hover` and `Always Show`; invalid input falls back to `Show on Hover`; setter returns the settled style. |
+| `Window:SetDragSkeleton(enabled)` | Compatibility on/off wrapper for drag style. | `false` selects `Off`; `true` restores `Outline` only when currently off. No documented return. |
+| `Window:SetTransparent(enabled)` | Sets the window's transparent presentation mode. | Separate from appearance-layer image transparency; no documented return. |
+| `Window:SetToggleButton(enabled)` / `SetToggleButtonPlatform(platform)` / `SetToggleButtonIcon(icon)` | Controls the floating toggle button, its platform restriction, and icon. | No documented return. |
+| `Window:SetHideName(hidden)` / `SetHideAvatar(hidden)` | Sets profile-name/avatar visibility flags. | Source uses strict `hidden == true`; no documented return. |
+| `Window:Rejoin()` / `ServerHop()` / `JoinLowestServer()` | Starts the corresponding asynchronous teleport operation. | No documented return; requires teleport/network capability. |
+| `Window:CopyToClipboard(text[, label])` | Uses executor clipboard support and displays a result notification. | Returns a boolean; requires `setclipboard` or an equivalent. |
+| `Window:ShowFeatures()` | Shows/selects the native feature surface. | No documented return. |
+| `Window:SetIgnoreFlags(flags)` | Adds flag names to the ignore set used while applying configs. | `flags` is expected to be an array/table; no documented return. |
+| `Window:SetLoadingOrder(order)` | Replaces the config-application type order when `order` is a table; otherwise clears the override. | No documented return. |
+| `Window:SetSidebarWidth(value)` | Sets the sidebar width through the function installed when the sidebar is built. | `value` is converted with `tonumber` (default `188`) and floored/clamped to **150–300 px**, further limited by available body width (`body width / scale - 300`) when that is smaller; the effective lower bound remains 150. Returns nothing. |
+| `Window:Destroy()` / `Window:Unload()` | Disconnects listeners, removes registrations, and destroys the window. | `Unload` is an alias; repeated destruction is guarded. |
+
+### Window: notifications and dialogs
+
+| Signature | Behavior / return | Verified details |
+|---|---|---|
+| `Window:Notify(options)` | Creates a toast and returns `{ Dismiss = function() ... end }`. | `Text`/`Message` normalize to `Content`; `Image` to `Icon`; `Type` selects notification color; `Duration` defaults to 4 seconds. |
+| `Window:Dialog(options)` | Opens a modal and returns a dialog object with `Close()`. | `Buttons` entries use `Title` or `Name`, optional `Variant`, and `Callback`; `OnCancel` runs on backdrop cancellation when `CloseOnBackdrop ~= false`. A new dialog closes the previous one. |
+| `Window:Confirm(options)` | Builds a two-button dialog and returns the dialog handle. | Uses `Content` (normalized from `Text`/`Message`), `ConfirmText`, `CancelText`, `Callback`, and `OnCancel`. |
+
+### Window: native file configs and autoload
+
+`ConfigurationSaving.Enabled` is not read by the implementation; it does not disable these methods or file operations.
+
+| Signature | Behavior / return | Verified details |
+|---|---|---|
+| `Window:OnConfigChanged(handler)` | Registers a config-change callback and returns a disconnect function. | Callback errors are protected by dispatch. |
+| `Window:ConfigExists(name)` | Returns boolean. | Requires a valid name and available file APIs; forbidden characters are `\\ / : * ? " < > |`. |
+| `Window:SaveConfig([name])` | Writes current flags; returns `true` or `false, error`. | Uses `ConfigName`; missing both returns `false, "no config name"`. |
+| `Window:LoadConfig([name[, silent]])` | Reads/applies a config; returns `true` or `false, error`. | Uses `ConfigName`, updates `LoadedConfig`, and fires listeners. |
+| `Window:DeleteConfig(name)` | Deletes a config; returns `true` or `false, error`. |
+| `Window:RenameConfig(name, newName)` | Copies, deletes, and updates references; returns `true` or `false, error`. | Rejects an existing destination or invalid name. |
+| `Window:ListConfigs()` | Returns sorted config basenames without `.json`; returns `{}` when listing is unavailable. |
+| `Window:ResetConfig([silent])` | Restores flagged elements to creation defaults; returns `true`. |
+| `Window:ClearWorkspace()` | Removes the complete config workspace; returns boolean. |
+| `Window:ExportConfig([name])` | Returns encoded JSON or `nil, error`. | With a name reads that file; without one encodes current flags. |
+| `Window:DecodeConfig(code)` | Returns `flags, { Folder, Name, Version }`, or `nil, error`. | Does not apply the config. |
+| `Window:ImportConfig(code[, saveAs[, force]])` | Applies decoded flags; returns `true, nil, savedName` or `false, error`. | `saveAs=true` uses embedded `Name`; a string saves under that name; omitted/nil applies without writing; `force=true` permits a different embedded folder. |
+| `Window:GetAutoloadMode()` / `SetAutoloadMode(mode)` | Gets/sets `Global` or `Account`; setter returns `true` or `false, error`. | Any mode other than `Account` is treated as `Global`. |
+| `Window:GetAutoload([scope])` / `SetAutoload(name[, scope])` | Gets/stores or clears an autoload name. | Scope is `Global` or `Account`; getter with no scope checks Account then Global. Setter returns `true` or `false, error`. |
+| `Window:GetMinimizeOnStart()` / `SetMinimizeOnStart(enabled)` / `LoadAutoload([silent])` | Gets/sets persisted minimize-on-start; loads configured autoload. | Setters/load return the underlying boolean/error results. |
+
+### Window: native themes and backgrounds
+
+| Signature | Behavior / return | Verified details |
+|---|---|---|
+| `Window:SaveTheme(name)` / `LoadTheme([name[, instant]])` / `DeleteTheme(name)` / `ListThemes()` | Theme file save/load/delete/list operations. | Return values come from the file operation; list returns names. |
+| `Window:GetDefaultTheme()` / `SetDefaultTheme(name)` | Gets/sets the window default theme selection. | Source signature accepts a **name**; library-level setter accepts a name or table. |
+| `Window:SetBackground(source)` / `GetBackground()` / `SetBackgroundTransparency(value)` / `ListBackgrounds()` | Sets/gets native background source, transparency, or preset names. | No unsupported source forms are inferred here. |
+| `Window:SetBackdrop(enabled)` | Enables/disables the backdrop. | Accepted input is a boolean-like value; source stores `enabled ~= false`. Returns nothing; does nothing if no backdrop was built. |
+| `Window:SetBackdropTint(amount)` | Sets backdrop tint amount. | Numeric input is clamped to **0–1**; defaults to `0.45` when nonnumeric. Returns nothing. |
+| `Window:SetDim(enabled)` | Enables/disables the black dim layer while leaving weather running. | This is a boolean switch (`enabled ~= false`), **not an amount**. Returns nothing. |
+| `Window:SetWeatherMode(mode)` | Selects weather placement. | `UI`, `Window`, and `Inside` (case-insensitive) select `UI`; every other input selects `Screen`. Returns nothing. |
+| `Window:SetWeather(name)` | Selects weather type. | Accepted canonical types: `Rain`, `Snow`, `Ember`, `Sakura`, `Fireflies`, `Matrix`; aliases include `embers/fire/hellfire`, `petals/cherryblossom`, `firefly`, and `matrixrain/code` (case-insensitive). Returns nothing. |
+| `Window:SetWeatherDensity(value)` | Sets weather particle density. | Numeric value is clamped to **0–3**; nonnumeric defaults to `1`. Returns nothing. |
+| `Window:SetWeatherSpeed(value)` | Sets weather animation speed. | Numeric value is clamped to **0.1–3**; nonnumeric defaults to `1`. Returns nothing. |
+
+### Tab (container receiver)
+
+| Signature | Behavior / return | Verified details |
+|---|---|---|
+| `Tab:Groupbox(options[, icon])` | Creates and returns a groupbox. | `CreateGroupbox`/`AddGroupbox` aliases; `AddLeftGroupbox` and `AddRightGroupbox` force a side. Calls from nested containers delegate to the parent tab. |
+| `Tab:Tabbox(options)` | Creates and returns a tabbox. | `CreateTabbox`/`AddTabbox` aliases; left/right variants force a side. |
+| `Tab:SubTab(options[, icon])` / `Tab:SelectSubTab(sub[, instant])` | Creates/selects sub-tabs. | Selection accepts a sub-tab object, title/name, or 1-based index; `instant` skips transition. `CreateSubTab`/`AddSubTab` alias the constructor. |
+| `Tab:CreateMinimizeOnStart([options])` | Returns the window's built-in minimize-on-start control, creating it once. |
+| `Tab:SetBadge()` / `Tab:GetBadge()` | Compatibility stubs. | Setter warns once and does nothing; getter returns `nil`. |
+| `Tab:ButtonRow(options)` / `ConfigManager(options)` / `ThemeManager(options)` | Creates and returns the corresponding native container/control. | These are source-defined convenience constructors. |
+| `Tab:Status(options)` / `Statuses(entries[, shared])` / `StatusList(options)` | Creates and returns native status displays. |
+| `Tab:Image(options)` / `Table(options)` / `Log(options)` | Creates and returns the corresponding native display container. | `CreateImage`/`AddImage`, `CreateTable`/`AddTable`, and `CreateLog`/`AddLog`/`Feed`/`CreateFeed`/`AddFeed` are aliases. |
+
+### Groupbox, tabbox, and pages
+
+| Signature | Behavior / return | Verified details |
+|---|---|---|
+| `Groupbox:PopOut()` / `Dock()` / `IsPoppedOut()` | Floats/docks the groupbox or returns its boolean popped-out state. |
+| `Groupbox:SetCollapsed(value)` / `Collapse()` / `Expand()` / `IsCollapsed()` | Sets/toggles collapsed state or returns boolean state. |
+| `Groupbox:SetTitle(text)` / `SetVisible(value)` / `IsVisible()` / `Destroy()` | Updates title, visibility, reports visibility, or destroys the groupbox and children. |
+| `Tabbox:AddTab(nameOrOptions[, icon])` / `Tabbox:SelectTab(page)` | Adds/returns a page or selects a page object. | `nameOrOptions` may be a string/options table; `CreateTab` aliases `AddTab`. `SelectTab` is page-object based in the source, not documented as name/index resolution. |
+| `Page:Select()` / `Expand()` / `Collapse()` / `IsCollapsed()` / `SetTitle(text)` / `Destroy()` | Selects/expands, collapses (compatibility no-op), reports non-current state, updates title, or destroys the page. |
+| `Tabbox:SetTitle(text)` / `IsVisible()` / `SetVisible(value)` / `Destroy()` | Updates title, reports/toggles visibility, or destroys the tabbox and pages. |
+
+### Verified aliases
+
+`Library.CreateWindow = Library.Window`; `Library.CreateNullFireWindow = Library.CreateKawiXDWindow`; `Library.Unload = Library.Destroy`; `Window.CreateTab = Window.Tab`; `Window.Unload = Window.Destroy`; `Tab.CreateGroupbox = Tab.Groupbox`; `Tab.AddGroupbox = Tab.Groupbox`; `Tab.CreateSubTab = Tab.SubTab`; `Tab.AddSubTab = Tab.SubTab`; `Tab.CreateLog`/`AddLog`/`Feed`/`CreateFeed`/`AddFeed` alias the log constructor; `Tab.CreateImage`/`AddImage`, `CreateTable`/`AddTable`, and `CreateLeaderboard` alias their constructors; `tabbox.CreateTab = tabbox.AddTab`.
+
+Element-handle contracts are indexed in the next expandable section.
+
+</details>
+
+<details>
+<summary><strong>Every element handle, normalization aliases, managers, and appearance contracts</strong></summary>
+
+### Rules shared by native elements
+
+- Every public `Tab:Foo(...)` constructor is also available as `Tab:CreateFoo(...)`; this alias is generated for every non-underscore `Tab` method. The same constructors are exposed by groupboxes through the groupbox forwarding layer. `Section` and `Divider` are valid constructors despite accepting a string shorthand.
+- `Visible = false` is honored at construction. Every finished element has `SetVisible(bool)`, `IsVisible()`, `SetDisabled(bool)`, `IsDisabled()`, `SetDependsOn(rule, mode?)`, `SetTooltip(tip)`, `GetTooltip()`, and `Destroy()`. `Destroy()` is idempotent, disconnects listeners, removes the element from its tab, removes its flag if it still owns that flag, and destroys its GUI frame. `SetVisible`/`SetDisabled` are no-ops after destruction.
+- `Tooltip` is a string or `{Title, Text, Icon}`; `SetTooltip(nil)`/`false` clears it. `DependsOn` uses the library flag dependency rules; `DependsMode = "Disable"` disables rather than hides when the rule is unmet. `SetDependsOn(nil)` removes the dependency.
+- Option normalization accepts the documented long names and the native aliases shown below. For table options, unknown fields are retained in the option table, so shared options such as `Flag`, `Visible`, `Disabled`, `DependsOn`, `DependsMode`, and `Tooltip` can be combined with each constructor.
+- Setters that implement a second `silent`/`skipCallback` argument document it below; do not assume every setter has one. Where a control compares old and new effective values, unchanged values do not invoke that control callback. Callback failures are isolated by the library.
+
+### Text and non-interactive elements
+
+#### Section
+
+`Tab:Section(textOrOptions) -> handle` accepts a string or `{Name=..., Title=..., Visible=...}`. Text is uppercased. `handle:Set(text)` replaces and uppercases the heading. The README's string example is accurate; the table form and visibility are otherwise easy to miss.
+
+#### Divider
+
+`Tab:Divider(nil|string|{Text=..., Name=..., Visible=...}) -> handle`. With a caption it renders centered text and two rules; without a caption it renders a line. `handle:Set(value)` exists only as a useful operation for a captioned divider (it still changes the line-less divider handle harmlessly, but there is no text node).
+
+#### Label
+
+`Tab:Label(string|{Text, Color, Update, UpdateRate, Visible, ...}) -> handle`.
+
+- `Text` is rich text; `Color` accepts `Color3`, `#RRGGBB`, or a theme key.
+- `Update()` is polled immediately in a spawned loop and then every `max(tonumber(UpdateRate), 0.05)` seconds (default 1); a successful non-`nil` return replaces the text. Errors warn and polling continues.
+- `Set(text)`, `Get() -> string` (the rendered rich-text source), `SetColor(color)`, and, when `Update` was supplied, `SetUpdateRate(seconds)` are public.
+
+#### Paragraph
+
+`Tab:Paragraph({Title=...|Name=..., Content=..., Visible=...}) -> handle`; `Title` is normalized from `Name`. `Set(text)` replaces only the body; there is no public title setter.
+
+#### Button
+
+`Tab:Button(options) -> handle`, with `Title -> Name` and `Description -> Desc` aliases. `Name`, `Desc`, `Icon`, `Style="Primary"`, `Callback`, `Confirm`, `ConfirmTimeout`, and `HoldToConfirm` are consumed by the body. `SetText(text)` changes the label. Confirm-gated buttons additionally expose `Disarm()`; it cancels the armed state and restores the original label. A compact/touch layout changes appearance but not the handle contract.
+
+#### Button row
+
+`Tab:ButtonRow(entries) -> handle` (also `CreateButtonRow`). Each entry is `{Name, Callback, Style}`. The returned handle has `SetText(index, text)` and `.Buttons`; `.Buttons` contains the per-button GUI/button handles. This constructor is present in the native implementation even though it is not a standalone `Tab:` definition in the element list.
+
+### Value controls
+
+#### Toggle
+
+`Tab:Toggle(options) -> handle`; aliases: `Title -> Name`, `Description -> Desc`, `CurrentValue`/`Value -> Default`. `Default` is true only for literal `true`. A true initial value invokes `Callback(true)` once during construction. `Set(value, silent?)` coerces with `value == true`, so truthy non-boolean values are **off**, not truthy; `Get() -> boolean`; `.Value` mirrors the state.
+
+#### Slider
+
+`Tab:Slider(options) -> handle`; aliases: `Title -> Name`, `Description -> Desc`, `CurrentValue`/`Value -> Default`, `Increment -> Step`; `Range={min,max}` also fills missing `Min`/`Max`. Defaults are `Min=0`, `Max=100`, `Step=1`. Values are numeric, clamped and snapped to the increment; the initial value is snapped too. `Set(value, silent?)`, `Get() -> number`, `.Value`, and `.Dragging` are public. `OnRelease(value)` runs once when pointer dragging ends (not for ordinary `Set`). Clicking the value chip opens an exact-number editor; nonnumeric typed input is ignored.
+
+#### Stepper
+
+`Tab:Stepper(options) -> handle` uses the same aliases and range/step defaults as Slider. `Set(value, silent?)` converts with `tonumber(value) or Min`, then snaps and clamps; `Get() -> number`; `.Value`. Holding +/- repeats after about 0.4 seconds. There is no `OnRelease` hook. The visible suffix is formatting only and is not included in the numeric value.
+
+#### Progress
+
+`Tab:Progress(options) -> handle`; aliases: `Title -> Name`, `Description -> Desc`, `CurrentValue`/`Value -> Default`. Value is clamped to `[0,1]` (including the initial value). `Color` controls fill; `TextColor` controls the formatted value text; both accept `Color3`, hex, or theme key. `Format(fraction) -> string` controls the right-hand label and supports rich text. `Set(value, silent?)`, `Get() -> number`, `.Value`, `SetColor(color)`, and `SetTextColor(color)` are public. Passing nil to `SetTextColor` returns it to the accent color. Theme changes re-render the formatted label.
+
+#### Dropdown
+
+`Tab:Dropdown(options) -> handle`; aliases: `Title -> Name`, `Description -> Desc`, `CurrentOption`/`Value -> Default`, `MultipleOptions -> Multi`, `Values -> Options`.
+
+- Single mode stores one option (a table default is reduced to its first item); multi mode stores a list (a scalar default is wrapped in a one-item list). `Set(value, silent?)` accepts a scalar in either mode; multi mode wraps it, and nil clears. `Get() -> scalar|nil` in single mode, or a **new array** in multi mode.
+- `Refresh(newOptions, keepSelection?, silent?)` replaces options. `keepSelection` defaults to false in this method; when true, selected values are retained. Callback runs only if the effective selection changed unless silent.
+- `SetOptions(newOptions, settings)` is the newer alias for Refresh and **keeps selection by default**. `settings` may be a boolean or `{KeepSelection=bool|keepSelection=bool, Silent=bool|silent=bool}`. `GetOptions() -> new array copy`.
+- `SetOpen(bool)` opens/closes the popup. `.Open` reflects it. `Options`, `Searchable` (default true unless explicitly false), `SearchAfter`, `SearchPlaceholder`, `MaxRows`, `PopupWidth`, `AllowNone`, `NoneText`, and `EmptyText` affect the popup. Multi mode has Select all/Clear all actions. Unknown selected values are retained for config saving and can become effective when options are refreshed; this is why `Set`/`Get` and `Refresh` can differ from the currently visible rows.
+
+#### Input
+
+`Tab:Input(options) -> handle`; aliases: `Title -> Name`, `Description -> Desc`, `PlaceholderText -> Placeholder`, `CurrentValue`/`Value -> Default`. `Set(value, silent?)` sets text and invokes the callback immediately unless silent (unlike typing, which commits on focus loss); `Get() -> string` in normal mode. With `Numeric=true`, text is parsed as a number including commas, spaces, `$`, `_`, `kg`, `/s`, and suffixes `k/m/b/t/qa/qi`; `Get() -> number|nil`, invalid typed/set text reverts to the last valid text, and the callback receives `(number, enterPressedOrFalse)`. Normal mode callback receives `(text, enterPressedOrFalse)`. Numeric config saving preserves the original text spelling through the internal save path.
+
+#### Keybind
+
+`Tab:Keybind(options) -> handle`; aliases: `Title -> Name`, `Description -> Desc`, `CurrentKeybind`/`Value -> Default`. A string default is converted with `Enum.KeyCode[string]`; `.Value` is the selected `Enum.KeyCode|nil`, `.Listening` is public state, `Set(keyCode, silent?)` changes it and calls `OnChanged(keyCode)` unless silent, and `Get() -> Enum.KeyCode|nil`. Clicking enters listening; Escape cancels. Outside listening, the main `Callback(keyCode)` runs only for an unprocessed matching key. Hiding the element cancels listening.
+
+#### Color picker
+
+`Tab:ColorPicker(options) -> handle`; aliases: `Title -> Name`, `Description -> Desc`, `Color`/`CurrentValue`/`Value -> Default`. Default is a `Color3` (the implementation passes it to `Color3.toHSV`; invalid types are not normalized). `Set(color, silent?)` requires a Color3, updates the picker, and calls `Callback(Color3)` unless silent; `Get() -> Color3`; `.Value`; `SetOpen(bool)` and `.Open` expose the expanded panel. Hex input accepts optional `#` and exactly six hex digits; invalid input restores the current uppercase `#RRGGBB`. RGB/HSV edits call the callback continuously while dragging.
+
+#### Order list
+
+`Tab:OrderList(options) -> handle`; aliases: `Title -> Name`, `Description -> Desc`, `Options`/`Values -> Items`. `MaxRows` defaults to 6 and is clamped to at least 1; `Numbered` and `Arrows` default true; `EmptyText` defaults to `"Nothing to order"`. Items are copied into draggable rows. `Set(list, silent?)` reorders existing items and remembers unknown values for a later `Refresh`; `Get() -> new array`; `Refresh(items, keepOrder?, silent?)` replaces the item set, preserving current order by default and appending new items. Drag completion and arrow nudges call `Callback(currentArray)`; `Set`/`Refresh` also call it unless silent. Duplicate values are supported, but order preservation is value-based.
+
+### Appearance wrapper attached by `CreateKawiXDWindow`
+
+These methods are **not** attached by plain `Library:CreateWindow`; they are installed by `Library:CreateKawiXDWindow(options)` (alias `CreateNullFireWindow`). The wrapper's `CreateAppearanceTab(options)` is also attached to the returned window; `Library:CreateAppearanceTab(window, options)` is the equivalent library-level form and asserts that the window is an appearance-enabled KawiXD window.
+
+- `Window:GetBackgroundStyle() -> detached table` returns `Source`, `Transparency`, `Tint` (uppercase hex), `ScaleType`, `TileSize={X,Y}`, and `Dim`. Native nonpositive tile offsets are reported as the useful default `{256,256}`.
+- `Window:SetBackgroundStyle(style) -> true | false, error` validates before changing anything; success returns only `true` (not a style table). `Source=false` means `"None"`; numeric image IDs must be nonnegative integers; `Transparency`/`Dim` are `[0,1]`; `Tint` is Color3 or `#RRGGBB`; `ScaleType` is exactly `Crop|Fit|Tile|Stretch`; tile dimensions are `1..4096`. An unresolved/invalid native source returns `false,error` and leaves the previous background intact. `GetBackgroundStyle` returns a normalized detached table.
+- `Window:GetAppearance() -> detached JSON-safe table` returns `{Version=1, Theme, Background, UIScale, AdaptiveSize, Density, CornerRadius}`. Theme colors are hex strings. It is not a control/config snapshot.
+- `Window:ExportAppearance() -> jsonString | nil,error` JSON-encodes the snapshot; it does not write a file.
+- `Window:ApplyAppearance(tableOrJSONString) -> true | false,error` accepts JSON up to 131072 bytes or a table. It validates version (only 1), theme colors, background, UIScale `0.6..1.5`, boolean AdaptiveSize, known Density, and CornerRadius `0..20` before applying. It can recolor sibling windows because theme/density/radius are library-shared. `Version` is optional for partial profiles; when present it must be `1`. A destroyed window returns `false,"Window is destroyed"`.
+
+### Verified native aliases and correction summary
+
+The important source-level corrections are: `Increment` is normalized to `Step`; `Range` fills `Min`/`Max`; `CurrentOption`/`MultipleOptions`/`Values` are dropdown aliases; `Input` and `Keybind` return parsed numeric/Enum values rather than always strings; dropdown `SetOptions` keeps selection by default while `Refresh` does not; dropdown save state retains currently unavailable selections; ColorPicker exposes `SetOpen`/`.Open`; Progress exposes both color setters; OrderList preserves unknown remembered order; and all handles inherit dependency, disabled, tooltip, visibility, and idempotent destruction behavior.
+
+### Additional native elements present later in Source.lua
+
+#### Status and Statuses
+
+`Tab:Status(options) -> handle` also has `CreateStatus` and `AddStatus` aliases. Normalization includes `Title->Name`, `Text/Content/CurrentValue/Default->Value`. Public options include `Name`, `Value`, `Style` (`Plain`, `Row`, `Badge`, `Dot`, `Bar`, `Stat`), `Tone`, `Color`/`ValueColor`, `Max`, `Prefix`, `Suffix`, `Placeholder`, `Update`, `UpdateRate`, `Wrap`, `Pin`, `Pulse`, and `Flash`. The handle supports `Set(value, max?)`, `Get()`, `SetTone(tone)`, `SetName(name)`, `SetColor(color)`, `SetUpdateRate(seconds)`, and `SetWrap(bool)`; update callbacks can return `(value, maxOrTone)`. `Tab:Statuses(entries, shared?)` / `CreateStatuses` returns handles keyed by entry name; entries may be names or option tables and shared options fill missing fields.
+
+#### StatusList
+
+`Tab:StatusList(options) -> handle` has `CreateStatusList` and `AddStatusList` aliases. `Title->Name` is normalized. `Rows` accepts strings or `{Text, Value, Tone|Color}` rows; `MaxRows`, `EmptyText`, `Update`, `UpdateRate`, and `Visible` are consumed. The returned handle has `Set(rows)`, `Get()` (copy), `Clear()`, `SetName(text)`, `SetUpdateRate(seconds)`, plus shared handle methods. `Update` returning nil leaves rows unchanged. Rows are reused and only update while the list is shown.
+
+#### Image
+
+`Tab:Image(options) -> handle` (aliases `CreateImage`, `AddImage`). Media-card options are `Name`/`Title`, `Desc`/`Description`, `Caption`, `Image`, `ScaleType` (`Crop` default, or any valid `Enum.ScaleType` name), `Color` (initial image tint), and shared options such as `Visible`, `Flag`, `Tooltip`, and dependencies. `Image` may be a numeric asset id, `avatar`/`headshot` (local player's thumbnail), a preset/URL/file accepted by the window image resolver, `"None"`, `""`, or nil.
+
+- `SetImage(source) -> true | false, error`: nil/empty/`"None"` hides the image and returns true; numeric ids become `rbxassetid://<floor(id)>`. A superseding call returns `false, "replaced by a newer image"`; resolution failure returns `false,error`. `Set` is the exact alias (`handle.Set = handle.SetImage`).
+- `Get() -> original source|nil` returns the last source argument, not the resolved URI. `SetCaption(text)` stringifies non-nil text (nil becomes empty) and hides the caption when empty. `SetScaleType(name)` applies a valid enum name and retains the current scale for an invalid name. `SetColor(color)` uses a Color3 or resets to white. `SetTitle(text)` stringifies text and updates the title when present.
+
+#### Table
+
+`Tab:Table(options) -> handle` (aliases `CreateTable`, `AddTable`, `CreateLeaderboard`); aliases `Title->Name`, `Description->Desc`, `Data->Rows`, `OnRowClick->Callback`. Options include `Name`, `Desc`, `Columns`, `Rows`, `Rank`, `RowHeight`, `MaxRows` (minimum 1; default 8), `Search` (default true), `SearchPlaceholder`, `EmptyText`, `Sortable` (default true), `Editable`, `AllowAdd`/`AllowRemove` (default true when editable), `AddText`, `NewRow`, `SortBy`, and `SortDescending` (default true when `SortBy` is supplied). A column may specify `Name`/`Title`, `Key`, `Width` (pixels >1, share 0..1), `Align`, `Format(value,row)`, `Color`, `Sortable`, and editable `Type`, `Options`, `Min`, `Max`, `Integer`, `Default`, `Placeholder`, `Searchable`, `SearchAfter`, `SearchPlaceholder`, `MaxRows`. A column with `Type` makes the table editable.
+
+Public methods: `SetColumns(columns) -> nil`; `SetRows(rows, silent?) -> nil` (scalar rows become `{scalar}`; editable rows are cloned; `OnChanged(handle.Rows)` runs only when editable and not silent); `Set` is its exact alias; `GetRows() -> handle.Rows` and `Get` are exact aliases returning the live rows table; `AddRow(row, position?) -> new row count`; `UpdateRow(index,row) -> true|false`; `RemoveRow(index) -> true|false`; `Clear() -> nil`; `Sort(columnKeyOrIndex?, descending?) -> nil` (nil key restores supplied order); `SetTitle(text) -> nil`; `SetMaxRows(count) -> nil` (minimum 1); `NewRow() -> row table`; and `SetSearch(text) -> nil`. Row clicks call `Callback(row,index)` when tappable. Cell edits and add/remove operations call `OnChanged(handle.Rows)` only in editable mode.
+
+#### Log
+
+`Tab:Log(options) -> handle` (aliases `CreateLog`, `AddLog`, `Feed`, `CreateFeed`); aliases `Title->Name`, `Description->Desc`, `Max->MaxEntries`, `Limit->MaxEntries`. Options include `MaxEntries` (minimum 1; default 100), `MaxRows`/`Lines` (minimum 1; default 6 visible lines), `Timestamps` (default true), `TimeFormat` (default `%H:%M:%S`), `EmptyText`, and shared options. `Push(text,color?) -> entry` appends `{Text=string, Color=color, Time=os.time()}` and returns that entry; color may be Color3, `#rrggbb`, or a theme key. Old entries are pruned from the front to `MaxEntries`; `Add` and `Log` are exact aliases. `Clear() -> nil` removes all entries; `Get() -> new array` returns oldest-first detached `{Text,Color,Time}` tables; `SetTitle(text) -> nil`; `SetMaxEntries(count) -> nil` clamps to at least 1 and prunes immediately.
+
+### Config and theme manager handles
+
+`Tab:ConfigManager(options) -> manager` (alias `CreateConfigManager`) returns a manager table, not an element handle. Options are `Name`/`Title`, `Icon`, `Side`, `Rows`, and `Placeholder`. Methods: `Refresh() -> nil`; `Create(name) -> nil`; `Save(name?) -> nil`; `Load(name?) -> nil`; `Delete(name?) -> nil` (confirmation-gated); `Rename(name?, newName) -> nil`; `Reset() -> nil` (confirmation-gated); `SetAutoload(name?) -> nil`; `ClearAutoload() -> nil`; `ToggleAutoload(name?) -> nil`; `SetAutoloadMode(mode) -> nil` (`Account` or global); `Export(name?) -> code|string?` (code on success, otherwise nil); and `Import(code) -> nil`. Name-less operations use the selected item. Mutating methods notify and do not expose the underlying window boolean/error pair.
+
+`Tab:ThemeManager(options) -> manager` (alias `CreateThemeManager`) returns a manager table. Options include `Name`/`Title`, `Icon`, `Side`, `Menu`, `MenuName`, `MenuIcon`, `MenuSide`, `Weather`, `Dim`, `Transparent`, `DragSkeleton`/`DragStyle`, `IslandStyle`, `AdaptiveSize`, `Scale`, `Density`, `CornerRadius`, `Background`, `Customize`, `Colors`, `Flag`, and `Placeholder`. Methods: `Refresh() -> nil`; `Create(name) -> nil`; `Save(name?) -> nil`; `Load(name?) -> nil`; `Delete(name?) -> nil` (confirmation-gated); and `ToggleDefault(name?) -> nil`.
+
+When `Flag ~= false` (default), ThemeManager registers `Library.Flags[flag]` where `flag` is the supplied string or `"__Theme"`. This hidden config handle has `Get() -> map` and `Set(value) -> nil`. `Get` returns `{Name, Colors, Weather, WeatherMode, Dim, Transparent, DragStyle, IslandStyle, CornerRadius, UIScale, AdaptiveSize, Density, Background, BackgroundTransparency}`; disabled sections are nil, `Colors` maps theme keys to hex strings, and false booleans remain false. `Set` ignores non-tables, applies supplied `Colors` and recognized look fields, and leaves omitted fields unchanged.
+
+### Library-level transient UI utilities
+
+`Library:Notify(opts)`, `Library:Confirm(opts)`, and `Library:Dialog(opts)` forward to the newest window and return that window method's result (or nil when there is no window). These are not tab elements and are documented here only to record the verified public utility signatures; their window-owned implementations return the transient notification/dialog handles where applicable.
+
+</details>
+
 ## Executor compatibility
 
 This library targets a Roblox client executor, as in the original Airflow documentation. Basic loading needs `loadstring` and `game:HttpGet`; persistent configs need file APIs such as `readfile` and `writefile`. Clipboard buttons use `setclipboard` when available. URL/file image backgrounds additionally need the supported request, file, and custom-asset APIs. The built-in unsupported-executor warning can offer **Continue anyway**; that is not a guarantee that every feature will work.
@@ -1866,6 +2180,8 @@ This library targets a Roblox client executor, as in the original Airflow docume
 Themes, density, and corner radius are shared by windows from one library instance; backgrounds are per-window. Adaptive sizing fits the viewport and is not physical display-DPI detection. This documentation correction does not claim a fresh runtime test or universal executor compatibility.
 
 ## Credits and scope
+
+README visuals use the official [Lucide icon set](https://github.com/lucide-icons/lucide), distributed through [Iconify](https://iconify.design/) under Lucide’s [ISC license](https://github.com/lucide-icons/lucide/blob/main/LICENSE). The animated headline uses [Readme Typing SVG](https://github.com/DenverCoder1/readme-typing-svg). These are externally hosted image embeds, not JavaScript or CSS animation inside the README, and add no repository files. Image blocking or host downtime may hide the decoration; all setup instructions and API text remain readable. The headline is decorative, not a runtime recording of the library.
 
 KawiXD builds on **[Airflow UI by PookiePepelsss](https://github.com/PookiePepelsss/Airflow-UI)**, using the selected base from **[joustingmatch/-3](https://github.com/joustingmatch/-3)** at revision `2cf70e5`. The native layout and behavior are retained; the core changes are branding, with appearance features provided by the extension. Attribution is retained here; the full native library is included in `Source.lua`.
 
