@@ -4,11 +4,11 @@
 
 ### Your interface. Your colors. Your background.
 
-A Roblox Luau UI library with a preserved native layout, three signature palettes, custom backgrounds, and portable appearance profiles.
+A single-file Luau UI library for Roblox client executor scripts, based on Airflow UI with the Null Fire appearance layer: native controls, live themes, custom backgrounds, and portable appearance profiles.
 
 **Luau · Appearance profiles v1 · Touch-aware scaling**
 
-[Get started](#get-started) · [Appearance](#make-it-yours) · [API reference](#api-reference) · [Example](Example.lua)
+[Get started](#get-started) · [Appearance](#make-it-yours) · [API reference](#native-api-reference) · [Example](Example.lua)
 
 </div>
 
@@ -30,15 +30,16 @@ KawiXD keeps the original Airflow sidebar, split groupboxes, controls, search, a
 
 ### 1. Install the library
 
-Copy the **complete contents** of [`Source.lua`](Source.lua) into a ModuleScript named `KawiXD` in `ReplicatedStorage`. This single file includes both the native core and the appearance layer. The `.lua` filename contains Roblox Luau code.
+Load [`Source.lua`](Source.lua) directly in a compatible Roblox client executor. It returns the complete library, including the Airflow-derived core and the Null Fire appearance layer. This is not a Roblox Studio project: no ModuleScript installation, ReplicatedStorage setup, or LocalScript is required. The `.lua` filename contains Roblox Luau code.
+
+The loading pattern is the same as the original Airflow docs: `loadstring(game:HttpGet(url))()`. Your executor must provide `loadstring` and client HTTP access. File configs, clipboard actions, and URL/file images depend on the corresponding executor APIs; do not assume every executor supports them.
 
 ### 2. Create your first window
 
-Run this from a LocalScript in your own experience or an environment you are authorized to test:
+Run this in the Roblox client executor you use for an experience you own or have permission to test:
 
 ```lua
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Library = require(ReplicatedStorage:WaitForChild("KawiXD"))
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/voidhub9-dotcom/Kawi-Template/main/Source.lua"))()
 
 local Window = Library:CreateKawiXDWindow({
     Name = "My Hub",
@@ -79,11 +80,15 @@ Window:SelectTab(Main)
 
 ### 3. Explore the showcase
 
-[`Example.lua`](Example.lua) is the standalone showcase with the complete library embedded. Run it separately in an environment you are authorized to test; it does not need a second copy of `Source.lua`. Demo controls change the interface only.
+[`Example.lua`](Example.lua) is a standalone KawiXD showcase with the complete library embedded. Run it separately; it does not need a second copy of `Source.lua`. Its demo controls change the interface only. It demonstrates selected native controls and the appearance editor, not every native element.
+
+```lua
+loadstring(game:HttpGet("https://raw.githubusercontent.com/voidhub9-dotcom/Kawi-Template/main/Example.lua"))()
+```
 
 ### Window defaults
 
-`CreateKawiXDWindow(options)` uses the native window factory and adds appearance methods. Its defaults are `Name = "KawiXD"`, `DefaultTheme = "Null Fire"` when no theme is supplied, and configuration saving disabled when no configuration options are supplied. Native window options remain available.
+`CreateKawiXDWindow(options)` uses the native window factory and adds appearance methods. Its defaults are `Name = "KawiXD"`, `DefaultTheme = "Null Fire"` when no theme is supplied, and an explicit `ConfigurationSaving = { Enabled = false, FolderName = "KawiXD" }` option when no configuration options are supplied. Native window options remain available. Plain `Library:CreateWindow(options)` is still the native factory: it does not attach the appearance methods and does not inject the `Null Fire` default. On a fresh library instance the native palette is `Midnight`; the native title and config folder default to `KawiXD`. Previously selected library themes and a saved player default can affect the starting palette.
 
 `CreateNullFireWindow` remains a backward-compatible alias. `Library.KawiXD` and `Library.NullFire` refer to the same metadata table, reporting version `1.0.0`.
 
@@ -112,7 +117,7 @@ else
 end
 ```
 
-`RegisterTheme(name, palette)` returns `true`, or `false, error`. Use native palette keys only: `Background`, `Surface`, `Surface2`, `Surface3`, `Stroke`, `StrokeHover`, `Accent`, `AccentDark`, `Text`, `Muted`, `Success`, `Warning`, and `Error`.
+`RegisterTheme(name, palette)` returns `true`, or `false, error`. The name must contain non-whitespace text and be at most 64 characters; supply at least one color. Unspecified colors are filled from the current theme. Use native palette keys only: `Background`, `Surface`, `Surface2`, `Surface3`, `Stroke`, `StrokeHover`, `Accent`, `AccentDark`, `Text`, `Muted`, `Success`, `Warning`, and `Error`.
 
 ### Style a background
 
@@ -147,7 +152,7 @@ Built-in background presets: **Deep Violet**, **Blood Red**, **Cyanic**, **Amber
 
 Invalid or unresolved sources leave the previous background intact. `GetBackgroundStyle()` returns a detached, normalized table with a hex-string tint.
 
-> **Image compatibility:** An accessible Roblox image asset ID is the portable recommendation. Direct web images and local files depend on environment-specific file/custom-asset APIs and were not covered by the recorded phone tests. An accepted asset ID can still fail to display because of permissions, moderation, or an incorrect image/decal ID. No upload picker is included.
+> **Image compatibility:** An accessible Roblox image asset ID is the portable recommendation. Direct web images and local files depend on environment-specific file/custom-asset APIs and are not portable to every executor. An accepted asset ID can still fail to display because of permissions, moderation, or an incorrect image/decal ID. No upload picker is included.
 
 ### Export and restore a look
 
@@ -210,14 +215,15 @@ Exactly four files make up this distribution:
 
 No documentation site, build step, or extra asset folder is required. To customize the library, edit `Source.lua`; `Example.lua` embeds its own copy, so keep that copy in sync if you also customize the standalone demo.
 
-## API reference
+## Native API reference
 
-The appearance API is documented above. The expandable reference below covers the preserved native controls, layout, notifications, configuration, and styling. Its examples assume the `Library` returned by the installation step. Native `CreateWindow` remains available; use `CreateKawiXDWindow` to attach the appearance methods. For this edition, the default title is `KawiXD`, the default theme is `Null Fire`, and configuration saving is disabled unless you opt in. Explicit option values in the native examples are examples, not changes to those defaults.
+The reference below follows the preserved original Airflow README, with library variables, file names, and KawiXD-specific native defaults corrected. All examples use the `Library` returned by the executor loader above. `CreateWindow` provides the native API; `CreateKawiXDWindow` additionally attaches the appearance API documented above. Use `Library.Flags`, `Library.Theme`, and `Library.Touch`—there is no separate `Airflow` global to load.
 
-Element handles use `:Set()` / `:Get()`, not `:SetValue()`. Constructors also support the forms without the `Create` prefix.
+Element handles use `:Set()` / `:Get()` where applicable, not `:SetValue()`. Constructors also support forms without the `Create` prefix. Use unique flags for saveable values, keep yielding work out of inline callbacks, and call `Window:LoadAutoload()` after building your controls when using native configs.
 
-<details>
-<summary><strong>Complete native API reference</strong></summary>
+### Reference contents
+
+[Window](#window) · [Home](#home) · [Tab](#tab) · [Sub Tab](#sub-tab) · [Groupbox](#groupbox) · [Tabbox](#tabbox) · [Visibility](#visibility) · [Tooltips](#tooltips) · [Search](#search) · [Section](#section) · [Divider](#divider) · [Label](#label) · [Status](#status) · [Status List](#status-list) · [Paragraph](#paragraph) · [Button](#button) · [Button Row](#button-row) · [Toggle](#toggle) · [Slider](#slider) · [Stepper](#stepper) · [Progress](#progress) · [Dropdown](#dropdown) · [Order List](#order-list) · [Input](#input) · [Keybind](#keybind) · [Color Picker](#color-picker) · [Image](#image) · [Table](#table) · [Log](#log) · [Notification](#notification) · [Confirm](#confirm) · [Flags](#flags) · [Configs](#configs) · [Icons](#icons) · [Fonts](#fonts) · [Theme](#theme) · [Coloured text](#coloured-text)
 
 ## Conventions
 
@@ -232,7 +238,7 @@ Every constructor also works without the `Create` prefix. `Tab:Toggle` is the sa
 ```lua
 local Window = Library:CreateWindow({
     Name = "KawiXD",
-    LoadingSubtitle = "by Pookie",
+    LoadingSubtitle = "My Hub",
     Icon = "wind",
     ToggleUIKeybind = "RightControl",
     Size = UDim2.fromOffset(760, 520),
@@ -240,14 +246,14 @@ local Window = Library:CreateWindow({
     MaxSize = Vector2.new(1100, 800),
     MaxNotifications = 4,
     KeepOnScreen = true,
-    OpenButton = { Title = "Airflow", Icon = "wind" },
+    OpenButton = { Title = "KawiXD", Icon = "wind" },
     ToggleButton = { Platform = "Mobile", Icon = "layout-grid" },
     Backdrop = { Weather = "Snow", Tint = 0.45 },
     Profile = true,
     Search = true,
     Loading = {
         Enabled = true,
-        Title = "Airflow",
+        Title = "KawiXD",
         Text = "Starting",
         Steps = { "Preparing interface", "Loading icons", "Almost there" },
         Duration = 1.6,
@@ -286,7 +292,7 @@ The sidebar is an inset rounded rail: the logo on top, then one tile per tab wit
 | --- | --- | --- | --- |
 | `Name` | string | `"KawiXD"` | Title in the sidebar header. Also names the ScreenGui. |
 | `LoadingSubtitle` | string | — | Small line under the title. |
-| `Icon` | string \| number \| table | OuroFlow mark (theme tinted) | Lucide name, asset id, or `{ Image, RectOffset, RectSize, Tint }`. See [Icons](#icons). |
+| `Icon` | string \| number \| table | Native logo asset (theme tinted) | Lucide name, asset id, or `{ Image, RectOffset, RectSize, Tint }`. See [Icons](#icons). |
 | `ToggleUIKeybind` | string \| KeyCode | `"RightControl"` | Hides and shows the window. `"RightShift"`, `"LeftAlt"`, `"Insert"`, `"F1"`, or an `Enum.KeyCode`. |
 | `Size` | UDim2 | `760 × 520` | Starting size. |
 | `MinSize` | Vector2 | `480 × 360` | Smallest size the resize grip allows. |
@@ -704,7 +710,7 @@ Tab:CreateDivider({ Text = "share" })
 ```lua
 local Label = Tab:CreateLabel({
     Text = "Players: 12",
-    Color = Airflow.Theme.Muted,
+    Color = Library.Theme.Muted,
     UpdateRate = 1,
     Update = function()
         return "Players: " .. #game.Players:GetPlayers()
@@ -1076,7 +1082,7 @@ local Progress = Tab:CreateProgress({
     Name = "Health",
     Desc = "Live from the humanoid",
     CurrentValue = 1,
-    Color = Airflow.Theme.Success,
+    Color = Library.Theme.Success,
     Format = function(Fraction)
         return math.floor(Fraction * 100) .. " hp"
     end,
@@ -1618,11 +1624,11 @@ Library:Dialog({
 > Read and write any element by its save key.
 
 ```lua
-print(Airflow.Flags.AutoSprint:Get())
-Airflow.Flags.WalkSpeed:Set(50)
+print(Library.Flags.AutoSprint:Get())
+Library.Flags.WalkSpeed:Set(50)
 ```
 
-Toggles, sliders, steppers, dropdowns, inputs, keybinds and colour pickers created with a `Flag` are stored on `Airflow.Flags`. Flags are also what configs save.
+Toggles, sliders, steppers, dropdowns, inputs, keybinds and colour pickers created with a `Flag` are stored on `Library.Flags`. Flags are also what configs save.
 
 ---
 
@@ -1677,7 +1683,7 @@ Requires `writefile` / `readfile`.
 
 | Name | Type | Default | Description |
 | --- | --- | --- | --- |
-| `FolderName` | string | `"AirflowUI"` | Folder in the executor workspace. Can be nested, like `"MyHub/Game"`; missing folders are made. |
+| `FolderName` | string | `"KawiXD"` | Folder in the executor workspace. Can be nested, like `"MyHub/Game"`; missing folders are made. |
 | `FileName` | string | none | Optional config used when `SaveConfig` / `LoadConfig` get no name. With none set, there is no default config: only configs you create exist. |
 
 `CreateConfigManager` takes `Name`, `Icon`, `Side` and `Placeholder`. Called on a groupbox it adds its rows there instead of making its own.
@@ -1768,6 +1774,8 @@ Call it before `CreateWindow`. The TTFs are saved to the folder on first run and
 
 ## Theme
 
+The native presets below remain available alongside `Null Fire`, `Null Ice`, and `Null Mono`. `CreateKawiXDWindow` requests `Null Fire` unless you pass `Theme` or `DefaultTheme`; a saved player default still takes precedence.
+
 > Colours, fonts and assets. Themes switch live: every themed colour in the window fades to the new one.
 
 ```lua
@@ -1779,16 +1787,16 @@ local Window = Library:CreateWindow({ Name = "KawiXD", DefaultTheme = "Synthwave
 
 Settings:CreateThemeManager({ Name = "Themes", Side = "Right" })
 
-Airflow.ThemePresets.Neon = { Accent = Color3.fromRGB(0, 255, 170) }
+Library.ThemePresets.Neon = { Accent = Color3.fromRGB(0, 255, 170) }
 
 local Family = "rbxasset://fonts/families/BuilderSans.json"
-Airflow.Fonts.Regular = Font.new(Family, Enum.FontWeight.Regular)
-Airflow.Fonts.Medium = Font.new(Family, Enum.FontWeight.Medium)
-Airflow.Fonts.Bold = Font.new(Family, Enum.FontWeight.SemiBold)
+Library.Fonts.Regular = Font.new(Family, Enum.FontWeight.Regular)
+Library.Fonts.Medium = Font.new(Family, Enum.FontWeight.Medium)
+Library.Fonts.Bold = Font.new(Family, Enum.FontWeight.SemiBold)
 
-Airflow.Assets.Logo = "rbxassetid://103859712365480"
-Airflow.Assets.Glow = "rbxassetid://8992230677"
-Airflow.Assets.Shadow = "rbxassetid://6014261993"
+Library.Assets.Logo = "rbxassetid://103859712365480"
+Library.Assets.Glow = "rbxassetid://8992230677"
+Library.Assets.Shadow = "rbxassetid://6014261993"
 ```
 
 Presets: `Midnight` (default), `Nebula`, `Synthwave`, `Sakura`, `Velvet`, `Rose`, `Crimson`, `Sunset`, `Amber`, `Gold`, `Cyber`, `Toxic`, `Matcha`, `Emerald`, `Aurora`, `Ocean`, `Frost`, `Abyss`, `Mono`, and the themed set `Halloween`, `Haunted`, `Christmas`, `Valentine`, `Lunar`, `Tropical`, `Dracula`, `Coffee`. `SetTheme` takes a preset name or a table of any keys below, as `Color3`, `"#RRGGBB"` or `{ r, g, b }`. Pass `true` as the second argument to skip the fade.
@@ -1819,12 +1827,12 @@ The theme manager is a groupbox with a **Preset** picker, **Weather** and **Weat
 | `Library:SetTheme(nameOrTable, instant?)` | Apply a preset or colours live. |
 | `Library:GetTheme()` | Copy of the current colours. |
 | `Library:SetDefaultTheme(nameOrTable)` / `GetDefaultTheme()` | The script's starting theme. Call it before or after `CreateWindow`; it applies right away unless the player saved their own default. |
-| `Airflow.ThemePresets` | The presets, by name. Add your own. |
+| `Library.ThemePresets` | The presets, by name. Add your own. |
 | `Window:SaveTheme(name)` / `LoadTheme(name)` / `DeleteTheme(name)` / `ListThemes()` | Saved themes. `LoadTheme` also accepts a preset name. |
 | `Window:SetDefaultTheme(name?)` / `GetDefaultTheme()` | The player's saved default, applied on start. Wins over the script default. |
 | `Tab:CreateThemeManager(opts)` | `Name`, `Icon`, `Side`, `Customize`, `Colors = { { key, label } }`, `Weather` (`false` hides the weather dropdown), `Dim` (`false` hides the dim toggle), `Transparent` (`false` hides the toggle), `DragStyle` (`false` hides the drag style picker), `IslandStyle` (`false` hides the Dynamic Island picker), `CornerRadius` (`false` hides the corner radius slider), `AdaptiveSize` (`false` hides the adaptive size switch), `Scale` and `Density` (`false` hides the UI scale slider or the density picker), `Background` (`false` hides the background image dropdown, id/link box and opacity slider). The weather dropdowns cover the weather and its mode, screen-wide or inside the window. Configs save the theme (palette, preset or theme name, weather, dim, transparent, drag style, island style, corner radius, adaptive size, UI scale, density, background image and opacity) under one hidden flag, `__Theme` by default; `Flag` renames it, `Flag = false` leaves the theme out of configs. |
 
-`Airflow.Touch` is `true` on touch-only devices; cards, chips and hit areas are larger there automatically.
+`Library.Touch` is `true` on touch-only devices; cards, chips and hit areas are larger there automatically.
 
 ---
 
@@ -1834,8 +1842,8 @@ The theme manager is a groupbox with a **Preset** picker, **Weather** and **Weat
 
 ```lua
 Status:Set("<Success>Online</Success> · 3 players")             -- a theme key as a tag
-Status:Set(Airflow.Colorize("12 ms", "Success"))                 -- the same, built for you
-Status:Set(Airflow.Colorize("Boss", Color3.fromRGB(255, 90, 90))) -- any Color3 or "#rrggbb"
+Status:Set(Library.Colorize("12 ms", "Success"))                 -- the same, built for you
+Status:Set(Library.Colorize("Boss", Color3.fromRGB(255, 90, 90))) -- any Color3 or "#rrggbb"
 Status:Set('<font color="#ff5a5a">raw</font> rich text')          -- plain Roblox rich text
 
 Group:CreateStatus({ Name = "Mode", Value = "Aggressive", Style = "Row", Color = "Warning" })
@@ -1849,17 +1857,13 @@ Whole-value colours take the same forms everywhere: a theme key string, a `Color
 
 | Member | Description |
 | --- | --- |
-| `Airflow.Colorize(text, color)` | Wraps `text` in a colour. A theme key gives a tag that follows the theme; anything else is baked in. `Library:Colorize(...)` works too. |
+| `Library.Colorize(text, color)` | Wraps `text` in a colour. A theme key gives a tag that follows the theme; anything else is baked in. `Library:Colorize(...)` works too. |
 
-</details>
+## Executor compatibility
 
-## Compatibility and testing
+This library targets a Roblox client executor, as in the original Airflow documentation. Basic loading needs `loadstring` and `game:HttpGet`; persistent configs need file APIs such as `readfile` and `writefile`. Clipboard buttons use `setclipboard` when available. URL/file image backgrounds additionally need the supported request, file, and custom-asset APIs. The built-in unsupported-executor warning can offer **Continue anyway**; that is not a guarantee that every feature will work.
 
-### What has been checked
-
-Existing local verification records report **13/13 UI-only smoke checks passed** in the authorized phone client at **640 × 360**. Checks covered native API availability, controls/layout, background validation and styling, profile round-tripping, custom themes, scaling, editor synchronization, and cleanup. The showcase's Deep Violet image loaded, and native pointer input selected the Appearance tab.
-
-These are existing recorded results, not a claim of fresh runtime testing with this README change. Direct URL/file images, Studio runtime, persistent config saving, 1440p/4K displays, physical DPI, and an exhaustive sweep of all native controls were **not** verified.
+Themes, density, and corner radius are shared by windows from one library instance; backgrounds are per-window. Adaptive sizing fits the viewport and is not physical display-DPI detection. This documentation correction does not claim a fresh runtime test or universal executor compatibility.
 
 ## Credits and scope
 
