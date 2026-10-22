@@ -4,9 +4,9 @@
 
 # KawiXD
 
-**A single-file Roblox client UI. An Airflow foundation. A look of your own.**
+**KawiXD. A single-file Roblox client UI. A look of your own.**
 
-<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&amp;weight=500&amp;size=20&amp;duration=2800&amp;pause=1200&amp;color=FF4B9A&amp;center=true&amp;vCenter=true&amp;width=760&amp;height=48&amp;lines=Your+interface.+Your+colors.+Your+background.%3BAirflow+foundation.+Null+Fire+appearance." width="760" height="48" alt="Your interface. Your colors. Your background. Airflow foundation. Null Fire appearance." />
+<img src="https://readme-typing-svg.demolab.com?font=Fira+Code&amp;weight=500&amp;size=20&amp;duration=2800&amp;pause=1200&amp;color=FF4B9A&amp;center=true&amp;vCenter=true&amp;width=760&amp;height=48&amp;lines=Your+interface.+Your+colors.+Your+background.%3BKawiXD+UI.+Your+style." width="760" height="48" alt="Your interface. Your colors. Your background. KawiXD UI. Your style." />
 
 <p>
 <img src="https://img.shields.io/badge/runtime-Luau-FF4B9A?style=flat-square" alt="Runtime: Luau" />
@@ -21,9 +21,9 @@
 
 ---
 
-> **Built for client executor scripts—not a Roblox Studio installation.** Load `Source.lua`, create a window, and build with the native Airflow-style API. Use `CreateKawiXDWindow` when you also want the Null Fire appearance methods.
+> **Built for client executor scripts—not a Roblox Studio installation.** Load `Source.lua`, create a window, and build with the KawiXD API. Use `CreateKawiXDWindow` when you also want the enhanced appearance methods.
 
-KawiXD keeps the familiar native surface—tabs, groupboxes, controls, search, flags, configs, themes, and motion—while adding Null Fire, Null Ice, and Null Mono appearance profiles, background styling, viewport fitting, and a draggable Dynamic Island.
+KawiXD keeps the familiar native surface—tabs, groupboxes, controls, search, flags, configs, themes, and motion—while adding bundled appearance profiles, background styling, viewport fitting, and a draggable Dynamic Island.
 
 | <img src="https://api.iconify.design/lucide/panels-top-left.svg?color=%23FF4B9A" width="22" alt="Lucide panels-top-left" /> **Native foundation** | <img src="https://api.iconify.design/lucide/palette.svg?color=%23FF4B9A" width="22" alt="Lucide palette" /> **Appearance layer** | <img src="https://api.iconify.design/lucide/activity.svg?color=%23FF4B9A" width="22" alt="Lucide activity" /> **Responsive state** |
 | :--- | :--- | :--- |
@@ -64,7 +64,7 @@ The four root files are [`Source.lua`](Source.lua), [`Example.lua`](Example.lua)
 
 ---
 
-> **Built for client executor scripts—not a Roblox Studio installation.** Load `Source.lua`, create a window, and build with the native Airflow-style API. Use `CreateKawiXDWindow` when you also want the Null Fire appearance methods.
+> **Built for client executor scripts—not a Roblox Studio installation.** Load `Source.lua`, create a window, and build with the KawiXD API. Use `CreateKawiXDWindow` when you also want the enhanced appearance methods.
 
 <table>
 <tr>
@@ -76,7 +76,7 @@ The four root files are [`Source.lua`](Source.lua), [`Example.lua`](Example.lua)
 <td width="33%" valign="top">
 <img src="https://api.iconify.design/lucide/palette.svg?color=%23FF4B9A" width="26" height="26" alt="Lucide palette" />
 <h3>Make it yours</h3>
-<p>Null Fire, Null Ice, and Null Mono alongside native themes. Live palettes, image backgrounds, tint, dim, fit, and portable appearance profiles.</p>
+<p>KawiXD appearance presets alongside native themes. Live palettes, image backgrounds, tint, dim, fit, and portable appearance profiles.</p>
 </td>
 <td width="33%" valign="top">
 <img src="https://api.iconify.design/lucide/activity.svg?color=%23FF4B9A" width="26" height="26" alt="Lucide activity" />
@@ -107,9 +107,9 @@ The four root files are [`Source.lua`](Source.lua), [`Example.lua`](Example.lua)
 
 ### 1. Load the library
 
-Load [`Source.lua`](Source.lua) directly in a compatible Roblox client executor. It returns the complete library, including the Airflow-derived core and the Null Fire appearance layer. This is not a Roblox Studio project: no ModuleScript installation, ReplicatedStorage setup, or LocalScript is required. The `.lua` filename contains Roblox Luau code.
+Load [`Source.lua`](Source.lua) directly in a compatible Roblox client executor. It returns the complete library, including the native UI core and the KawiXD appearance layer. This is not a Roblox Studio project: no ModuleScript installation, ReplicatedStorage setup, or LocalScript is required. The `.lua` filename contains Roblox Luau code.
 
-The loading pattern matches the original Airflow docs: `loadstring(game:HttpGet(url))()`. Your executor must provide `loadstring` and client HTTP access. File configs, clipboard actions, and URL/file images depend on the corresponding executor APIs; do not assume every executor supports them.
+Load the library with `loadstring(game:HttpGet(url))()`. Your executor must provide `loadstring` and client HTTP access. File configs, clipboard actions, and URL/file images depend on the corresponding executor APIs; do not assume every executor supports them.
 
 ### 2. Create your first window
 
@@ -298,7 +298,7 @@ No documentation site, build step, or extra asset folder is required. To customi
 
 ## Native API reference
 
-The reference below follows the preserved original Airflow README, with library variables, file names, and KawiXD-specific native defaults corrected. All examples use the `Library` returned by the executor loader above. `CreateWindow` provides the native API; `CreateKawiXDWindow` additionally attaches the appearance API documented above. Use `Library.Flags`, `Library.Theme`, and `Library.Touch`—there is no separate `Airflow` global to load.
+The reference below documents KawiXD’s native UI API, file names, and default behavior. All examples use the `Library` returned by the executor loader above. `CreateWindow` provides the native API; `CreateKawiXDWindow` additionally attaches the appearance API documented above. Use `Library.Flags`, `Library.Theme`, and `Library.Touch` from the loaded library.
 
 Element handles use `:Set()` / `:Get()` where applicable, not `:SetValue()`. Constructors also support forms without the `Create` prefix. Use unique flags for saveable values, keep yielding work out of inline callbacks, and call `Window:LoadAutoload()` after building your controls when using native configs.
 
@@ -1756,7 +1756,7 @@ A config file and a share code are the same readable JSON, so a code is just the
 
 - `Folder` is the window's `FolderName`. Importing a code made for another folder asks first, and then only applies the flags that match by name and type.
 - `Config` is the flags as their own JSON string. Each flag is `{ "Value": ..., "Type": ... }`. Colours are `{ "Hex": "rrggbb" }`, keybinds are key names (`"RightShift"`), and a dropdown with nothing picked has no `Value`.
-- Old `airflow:...` base64 codes and older config files (bare flag tables, colours as RGB arrays) still load, and are rewritten in the new format on the next save.
+- Legacy prefixed base64 codes and older config files (bare flag tables, colours as RGB arrays) still load, and are rewritten in the new format on the next save.
 
 Configs only change when you press **Create** or **Save** (or call `SaveConfig`); nothing is written automatically. The autoload mode lives in `<folder>/configsettings.txt`, apart from the configs, so loading a config never flips it. *This account* keeps the autoload in `autoload_<UserId>.txt`, so other accounts on the same PC don't load it. Switching modes moves the current autoload across.
 
@@ -2218,7 +2218,7 @@ When `Flag ~= false` (default), ThemeManager registers `Library.Flags[flag]` whe
 
 ## Executor compatibility
 
-This library targets a Roblox client executor, as in the original Airflow documentation. Basic loading needs `loadstring` and `game:HttpGet`; persistent configs need file APIs such as `readfile` and `writefile`. Clipboard buttons use `setclipboard` when available. URL/file image backgrounds additionally need the supported request, file, and custom-asset APIs. The built-in unsupported-executor warning can offer **Continue anyway**; that is not a guarantee that every feature will work.
+KawiXD targets a Roblox client executor. Basic loading needs `loadstring` and `game:HttpGet`; persistent configs need file APIs such as `readfile` and `writefile`. Clipboard buttons use `setclipboard` when available. URL/file image backgrounds additionally need the supported request, file, and custom-asset APIs. The built-in unsupported-executor warning can offer **Continue anyway**; that is not a guarantee that every feature will work.
 
 Themes, density, and corner radius are shared by windows from one library instance; backgrounds are per-window. Adaptive sizing fits the viewport and is not physical display-DPI detection. This documentation correction does not claim a fresh runtime test or universal executor compatibility.
 
@@ -2226,7 +2226,7 @@ Themes, density, and corner radius are shared by windows from one library instan
 
 README visuals use the official [Lucide icon set](https://github.com/lucide-icons/lucide), distributed through [Iconify](https://iconify.design/) under Lucide’s [ISC license](https://github.com/lucide-icons/lucide/blob/main/LICENSE). The animated headline uses [Readme Typing SVG](https://github.com/DenverCoder1/readme-typing-svg). These are externally hosted image embeds, not JavaScript or CSS animation inside the README, and add no repository files. Image blocking or host downtime may hide the decoration; all setup instructions and API text remain readable. The headline is decorative, not a runtime recording of the library.
 
-KawiXD builds on **[Airflow UI by PookiePepelsss](https://github.com/PookiePepelsss/Airflow-UI)**, using the selected base from **[joustingmatch/-3](https://github.com/joustingmatch/-3)** at revision `2cf70e5`. The native layout and behavior are retained; the core changes are branding, with appearance features provided by the extension. Attribution is retained here; the full native library is included in `Source.lua`.
+Upstream source credit: [PookiePepelsss](https://github.com/PookiePepelsss) and [joustingmatch](https://github.com/joustingmatch). KawiXD includes the complete UI library and its appearance features in `Source.lua`.
 
 All four files in this repository are distributed under the MIT license below. Native image assets, icons, and custom fonts may fetch upstream resources when used; externally hosted resources are not bundled in these four files and may have their own terms.
 
