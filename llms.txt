@@ -87,7 +87,7 @@ Every element takes `Name`, `Desc` (a muted hint under the name), `Tooltip` (a s
 | `Stepper` | `Range`, `Increment`, `Suffix`, `CurrentValue`, `Flag`, `Callback(n)` | `.Value`, `Set`, `Get` |
 | `Dropdown` | `Options`, `CurrentOption`, `MultipleOptions`, `AllowNone`, `Searchable`, `MaxRows`, `NoneText`, `Stacked`, `Flag`, `Callback(value or list)` | `Set`, `Get`, `SetOptions(options, { KeepSelection = true, Silent = false })`, `GetOptions`, `Refresh(options, keepSelection?, skipCallback?)`, `SetOpen`, `.Open` |
 | `OrderList` | `Items`, `MaxRows`, `Numbered`, `Arrows`, `Flag`, `Callback(order)` | `.Value`, `Set(order)`, `Refresh(items)`, `Get` |
-| `Input` | `PlaceholderText`, `CurrentValue`, `Numeric`, `Icon`, `Flag`, `Callback(text, enterPressed)` | `Set`, `Get` |
+| `Input` | `PlaceholderText`, `CurrentValue`, `Numeric`, `Icon`, `Flag`, `Callback(textOrNumber, enterPressed)` | `Set`, `Get` |
 | `Keybind` | `CurrentKeybind` (`"F"` or `Enum.KeyCode.F`), `Flag`, `Callback(key)`, `OnChanged(key)` | `.Value`, `.Listening`, `Set`, `Get` |
 | `ColorPicker` | `Color`, `Flag`, `Callback(Color3)` | `.Value`, `Set`, `Get`, `SetOpen` |
 | `Label` | `Text` (or a bare string), `Color`, `Update`, `UpdateRate` | `Set`, `Get`, `SetColor` |
@@ -142,7 +142,7 @@ Minimizing folds the window into a Dynamic Island at the top of the screen. Play
 - `Library:CreateKawiXDWindow(options)` calls native `CreateWindow` and attaches the appearance methods. Defaults injected when absent: `Name = "KawiXD"`, `DefaultTheme = "Null Fire"` (only if neither `Theme` nor `DefaultTheme` is supplied), and `ConfigurationSaving = { Enabled = false, FolderName = "KawiXD" }`.
 - `Library:CreateNullFireWindow(options)` is an alias. `Library.KawiXD` and `Library.NullFire` are the same metadata table (`Version = "1.0.0"`, `AppearanceVersion = 1`).
 - Native `Library:CreateWindow(options)` remains available, defaults its title/config folder to `KawiXD`, and does NOT attach appearance methods or inject `Null Fire`. A fresh library starts with `Midnight`; an existing library theme/script default and a saved player default can change it. Do not claim these two factories have identical theme defaults.
-- `CreateKawiXDWindow` supplies a disabled configuration option by default. For native config use, pass `ConfigurationSaving = { Enabled = true, FolderName = "MyHub" }`, use flags and `CreateConfigManager`, and call `LoadAutoload`. Do not confuse explicit appearance export with native config persistence.
+- `CreateKawiXDWindow` supplies a disabled configuration option by default. **The source never reads `ConfigurationSaving.Enabled`: `Enabled = false` does not disable file operations or hidden size flags.** For native configs, select `FolderName`, use flags and `CreateConfigManager`, and call `LoadAutoload`. Do not confuse explicit appearance export with native config persistence.
 
 ## Null Fire appearance extension
 
@@ -165,3 +165,42 @@ Profiles do not automatically save to disk or include control flags/gameplay sta
 ## Attribution and distribution
 
 The Airflow-derived native API is preserved; KawiXD adds branding and the Null Fire appearance extension. Exactly four root files are distributed: `Source.lua`, `Example.lua`, `Readme.MD`, `llms.txt`. Do not reference a bundled docs site, source tree, build scripts, or extra asset folders. See Readme.MD for attribution and the existing license text. Native icons, fonts, images and some Home features can access external resources when used.
+
+## Extended UI API: source-exact rules
+
+Read [the README extended index](Readme.MD#extended-api-index) for full signatures, option aliases, manager handles, return types, and corner cases. Do not invent getters/setters from symmetry.
+
+### Library and window details
+
+- `Library:Window(options)` aliases `CreateWindow`. Library `Notify`, `Confirm`, and `Dialog` forward to the newest window, returning nil if none exists. `Library:Destroy()` / `Unload()` destroys all windows; window destruction affects one.
+- `Library:SetDensity(mode)` accepts Compact/Default/Comfortable case-insensitively, invalid → Default, and returns the mode. There is **no** `Library:GetDensity`; use `Window:GetDensity`. `Library:SetCornerRadius(pixels, instant?)` returns the rounded/clamped 0..20 integer.
+- `Window:SelectTab(tab)` needs the tab object, **not** a name/index. `Tab:SelectSubTab(sub, instant?)` additionally resolves a name or 1-based index. `Window:SetKeybind` stores the supplied value directly: pass Enum.KeyCode, not a string (constructor strings are normalized).
+- `Window:SetSidebarWidth(value)` floors/clamps to 150..300 px with available-space limits; `SetSize(Vector2, instant?)`, `GetSize`, `SetKeepOnScreen`, `SetMinimized`, `SetIslandDraggable`, and `ResetIslandPosition` are public.
+- `SetDragStyle` returns Outline/Brackets/Ghost/Frame/Off; invalid → Outline. `SetDragSkeleton(false)` selects Off. `SetIslandStyle` returns Show on Hover/Always Show; invalid → Show on Hover.
+- `SetToggleButton`, `SetToggleButtonPlatform` (Mobile/Both), `SetToggleButtonIcon`, `SetHideName`, `SetHideAvatar`, `SetTransparent`, `ShowFeatures`, `CopyToClipboard(text,label?)`, `Rejoin`, `ServerHop`, and `JoinLowestServer` are native window methods. Clipboard/teleport require executor/network capabilities.
+- `Window:Notify(opts)` returns a handle with `Dismiss()`. `Dialog`/`Confirm` return a dialog handle with `Close()`. Do not assume these are value controls.
+- `SetBackdrop(enabled)` and `SetDim(enabled)` are boolean switches, not option tables or amounts. `SetBackdropTint(n)` clamps 0..1. `SetWeatherMode` accepts UI/Window/Inside (case-insensitive) for UI, otherwise Screen. Weather canonical values are Rain/Snow/Ember/Sakura/Fireflies/Matrix with documented aliases; `None`/other unrecognized names stop particles. `SetWeatherDensity` clamps 0..3 and `SetWeatherSpeed` clamps 0.1..3.
+- `Window:SetIgnoreFlags(array)` accumulates ignored names. `SetLoadingOrder(arrayOrNil)` overrides/restores type ordering; default Library.LoadingOrder is Dropdown, Slider, Stepper, Input, ColorPicker, Keybind, Toggle. Config setters run on deferred threads. `OnConfigChanged(fn)` returns a disconnect function.
+- Config APIs include ConfigExists, SaveConfig, LoadConfig, DeleteConfig, RenameConfig, ListConfigs, ResetConfig, ClearWorkspace, ExportConfig, DecodeConfig, ImportConfig, Get/SetAutoloadMode, Get/SetAutoload, Get/SetMinimizeOnStart, LoadAutoload. `ClearWorkspace` deletes the config folder. `LoadAutoload` is guarded against running twice. `ExportConfig` emits JSON; `DecodeConfig` also accepts legacy airflow base64. `ImportConfig(code,saveAs?,force?)` returns true,nil,savedName or false,error; without saveAs it applies only.
+- `Window:SaveTheme`, `LoadTheme`, `DeleteTheme`, `ListThemes`, `SetDefaultTheme`, `GetDefaultTheme`, `SetBackground`, `GetBackground`, `SetBackgroundTransparency`, and `ListBackgrounds` remain native. The window default-theme setter takes a name; the library setter also accepts a palette table/nil.
+
+### Containers and compatibility
+
+Groupboxes expose PopOut, Dock, IsPoppedOut, SetCollapsed, Collapse, Expand, IsCollapsed, SetTitle, SetVisible, IsVisible, Destroy. Tabboxes expose AddTab/CreateTab, SelectTab(page object), SetTitle, IsVisible, SetVisible, Destroy; pages expose Select, Expand, Collapse (compatibility no-op), IsCollapsed, SetTitle, Destroy. `Tab:SetBadge` is a removed-feature no-op with one warning; `GetBadge` returns nil. Do not build badges assuming these work. `Tab:CreateMinimizeOnStart` returns the built-in setting control.
+
+### Handle and value details
+
+- Shared finished-element methods include IsDisabled and GetTooltip as well as SetDisabled, SetTooltip, SetDependsOn, SetVisible, IsVisible, Destroy. Collections/managers are not identical element handles. SetTooltip(nil/false) clears; SetDependsOn(nil) removes the dependency.
+- Toggle Set requires literal true; truthy strings/numbers are false. Slider/Stepper normalize Increment→Step, Range→Min/Max. Label and polling status handles expose SetUpdateRate (Label only when constructed with Update). Divider has Set for its caption.
+- Numeric Input Get/callbacks return number|nil, not text; supported numeric separators and magnitude suffixes are parsed. Invalid numeric edits restore the prior valid text. Programmatic Set invokes callback unless silent. Keybind Get returns Enum.KeyCode|nil and Set invokes OnChanged, not the action Callback.
+- Dropdown Refresh(options,keepSelection?,silent?) defaults keepSelection=false; SetOptions defaults it true and accepts settings table/boolean. GetOptions returns a copy. Unavailable selections can be remembered for configs. OrderList Refresh(items,keepOrder?,silent?) preserves order by default and remembers unavailable values.
+- ColorPicker Set requires Color3, and SetOpen/.Open exist. Progress values are fractions 0..1; SetColor/SetTextColor exist. Section text is uppercased. Paragraph Set changes the body, not the title.
+- Image exposes SetImage/Set (true or false,error), Get (last source), SetCaption, SetScaleType, SetColor (Color3 or white), SetTitle. URL/file resolution is executor-dependent.
+- Table exposes SetColumns, SetRows/Set, GetRows/Get (**live rows**, not a detached copy), AddRow (new row count), UpdateRow/RemoveRow (boolean), Clear, Sort, SetTitle, SetMaxRows, NewRow (row), SetSearch. Editable tables support OnChanged and Flag. Log/Feed exposes Push/Add/Log (returns entry), Clear, Get (detached entries oldest-first), SetTitle, SetMaxEntries.
+- Status exposes Set, Get, SetTone, SetColor, SetName, SetUpdateRate, SetWrap. Statuses returns handles keyed by name. StatusList exposes Set/Get(copy), Clear, SetName, SetUpdateRate and refreshes only while shown.
+- ConfigManager returns a manager with Refresh/Create/Save/Load/Delete/Rename/Reset/SetAutoload/ClearAutoload/ToggleAutoload/SetAutoloadMode/Export/Import; UI mutators notify instead of returning the window success/error pair. ThemeManager returns Refresh/Create/Save/Load/Delete/ToggleDefault. Native theme manager hidden __Theme Get/Set covers native look fields but not every appearance extension field.
+- Appearance ApplyAppearance accepts omitted Version for a partial profile; an explicit Version must be 1. SetBackgroundStyle returns true or false,error, **not** a style table; call GetBackgroundStyle for normalized state.
+
+### Documentation visuals
+
+README icons use the Lucide collection via Iconify; the animated headline is an externally hosted SVG image, not executable README code or proof of a runtime test. No fifth repository file or bundled docs site is required.
