@@ -1,31 +1,31 @@
-# KawiXD UI — Roblox client executor library
+# Aqua Hub UI — Roblox client executor library
 
-> KawiXD is a single-file Luau UI library for Roblox client executor scripts, based on Airflow UI with the Null Fire appearance layer: a window with a sidebar of tabs, sub tabs, two-column collapsible groupboxes and native controls and readouts (toggles, sliders, dropdowns, statuses, tables and more), plus configs, live themes, coloured text, window-wide search and a draggable Dynamic Island minimize. This file is a guide for language models writing scripts with it. Follow it exactly; the README holds every option.
+> Aqua Hub is a single-file Luau UI library for Roblox client executor scripts, branded Aqua Hub by von63rd with a blue Aqua appearance layer: a window with a sidebar of tabs, sub tabs, two-column collapsible groupboxes and native controls and readouts (toggles, sliders, dropdowns, statuses, tables and more), plus configs, live themes, coloured text, window-wide search and a draggable Dynamic Island minimize. This file is a guide for language models writing scripts with it. Follow it exactly; the README covers setup; the readable source defines every option.
 
 Load it once, build the window, add tabs, put groupboxes on tabs (or sub tabs), and put elements in groupboxes. Every element with a `Flag` is saved by configs. Individual element handles expose the applicable `Set` / `Get` methods, plus common visibility, disabled, dependency, tooltip, and destroy methods. Collection constructors return collections; do not assume every constructor has the same value methods.
 
 ## Files
 
-- [Readme.MD](Readme.MD): the full reference, one section per element with every option and handle member.
-- [Example.lua](Example.lua): the complete library embedded with a standalone KawiXD showcase of selected native controls and the appearance editor. It does not demonstrate every element; use Readme.MD for the complete reference.
+- [Readme.MD](Readme.MD): the branded setup guide, common examples, capability notes and license.
+- [Example.lua](Example.lua): the complete library embedded with a standalone Aqua Hub showcase of selected native controls and the appearance editor. It does not demonstrate every element; use the API tables below and the readable source for less common options.
 - [Source.lua](Source.lua): the complete readable library and appearance extension; returns `Library`. This is what scripts `loadstring`. It is not the original upstream minified build.
 
 ## Loading
 
-This is NOT a Roblox Studio project. Do not instruct users to create ModuleScripts or LocalScripts, install into ReplicatedStorage, or use `require(ReplicatedStorage.KawiXD)`. Use the original executor loading pattern below. HTTP, file, clipboard, and custom-asset features depend on executor capabilities.
+This is NOT a Roblox Studio project. Do not instruct users to create ModuleScripts or LocalScripts, install into ReplicatedStorage, or use `require(ReplicatedStorage.AquaHub)`. Use the original executor loading pattern below. HTTP, file, clipboard, and custom-asset features depend on executor capabilities.
 
 ```lua
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/voidhub9-dotcom/Kawi-Template/main/Source.lua"))()
 ```
 
-Optional, before native `CreateWindow`: `Library:LoadFont({ Name = "ValleySans" })`, `Library:SetDefaultTheme("Nebula")`, `Library:PreloadIcons()`. With `CreateKawiXDWindow`, pass `Theme = "Nebula"` in the options to select that starting preset instead of the wrapper default.
+Optional, before native `CreateWindow`: `Library:LoadFont({ Name = "ValleySans" })`, `Library:SetDefaultTheme("Nebula")`, `Library:PreloadIcons()`. With `CreateAquaHubWindow`, pass `Theme = "Nebula"` in the options to select that starting preset instead of the wrapper default.
 
 ## Skeleton to start from
 
 ```lua
-local Window = Library:CreateKawiXDWindow({
-    Name = "My Hub",                       -- title, also names the ScreenGui
-    LoadingSubtitle = "by Me",
+local Window = Library:CreateAquaHubWindow({
+    Name = "Aqua Hub",                       -- title, also names the ScreenGui
+    LoadingSubtitle = "by von63rd",
     ToggleUIKeybind = "RightControl",      -- hides and shows the window
     ConfigurationSaving = { Enabled = true, FolderName = "MyHub" },
     Home = { Discord = "dsc.gg/myhub" },   -- built-in first tab; false removes it
@@ -37,7 +37,7 @@ local Info = Main:CreateGroupbox({ Name = "Info", Side = "Right" })
 
 local AutoFarm = Farm:CreateToggle({
     Name = "Auto Farm",
-    Flag = "AutoFarm",                     -- unique; makes it saveable and reachable as Library.Flags.AutoFarm
+    Flag = "AutoFarm",                     -- unique; makes it saveable and reachable as Window.Flags.AutoFarm
     CurrentValue = false,
     Callback = function(On)
         -- runs on every change, and once at creation when CurrentValue is true
@@ -64,7 +64,7 @@ Window:LoadAutoload()                      -- apply the player's autoload config
 - Options are a single table. Legacy names are accepted (`Title` for `Name`, `Description` for `Desc`, `CurrentValue` / `Default` / `Value` for the start value, `MultipleOptions` / `Multi`), but prefer the names in this file.
 - Once a tab has sub tabs (`Tab:CreateSubTab({ Name = "Page" })`), add groupboxes and elements to the sub tabs, not the tab.
 - Elements added straight to a tab are full-width cards; elements in a groupbox are compact rows. Groupboxes are the normal choice.
-- `Flag` strings must be unique across the whole script. Toggles, sliders, steppers, dropdowns, order lists, inputs, keybinds and colour pickers take flags. Labels, buttons and statuses are not saveable value controls. Editable tables may also use `Flag` when configured with typed columns and editing options.
+- `Flag` strings must be unique within a window. Each window has `Window.Flags`; configs, dependencies, resets and island counts use that window only. `Library.Flags` is a latest-registered compatibility map, so prefer `Window.Flags` when creating several windows. Toggles, sliders, steppers, dropdowns, order lists, inputs, keybinds and colour pickers take flags. Labels, buttons and statuses are not saveable value controls. Editable tables may also use `Flag` when configured with typed columns and editing options.
 - Flagged toggles that are on count as "running" on the minimized island. Don't flag a toggle that is only a setting if that would mislead; a setting is still fine to flag.
 - `Set(value, true)` skips the callback. Use it when syncing UI from code.
 - `Update` functions may yield (`InvokeServer`, `task.wait`); they run on their own thread. Element callbacks run inline and errors are caught and warned, so keep them quick and wrap long loops in `task.spawn`. Library calls made from a thread that yielded in an engine call are made safe automatically.
@@ -126,31 +126,32 @@ Minimizing folds the window into a Dynamic Island at the top of the screen. Play
 
 ## Theme
 
-- `Library:SetTheme("Midnight")` or `Library:SetTheme({ Accent = Color3.fromRGB(128, 160, 246) })`; every colour cross-fades live.
-- Presets: Midnight (fresh native library default), Nebula, Synthwave, Sakura, Velvet, Rose, Crimson, Sunset, Amber, Gold, Cyber, Toxic, Matcha, Emerald, Aurora, Ocean, Frost, Abyss, Mono, Halloween, Haunted, Christmas, Valentine, Lunar, Tropical, Dracula, Coffee.
+- `Library:SetTheme("Aqua")` or `Library:SetTheme({ Accent = Color3.fromRGB(56, 189, 248) })`; every colour cross-fades live.
+- Presets: Aqua (fresh library and enhanced factory default), Aqua Ice, Aqua Mono, Midnight, Nebula, Synthwave, Sakura, Velvet, Rose, Crimson, Sunset, Amber, Gold, Cyber, Toxic, Matcha, Emerald, Aurora, Ocean, Frost, Abyss, Mono, Halloween, Haunted, Christmas, Valentine, Lunar, Tropical, Dracula, Coffee.
 - `Tab:CreateThemeManager({ Side = "Right" })` gives players presets, weather, dim, transparency, drag skeleton, adaptive size, UI scale, density, background image and colour pickers. All of it is saved in configs under the hidden `__Theme` flag.
 - Read colours from `Library.Theme.Accent` and so on; don't cache them across theme changes.
 
 ## Optional
 
-- [README: Home](Readme.MD#home): profile card, live stats (FPS, ping and memory tinted by health), game and executor cards, feature list, changelog pages.
+- Optional Home supports a profile card, live stats, game/executor cards, feature lists and changelog pages; see the readable source for its options.
 - [README: Configs](Readme.MD#configs): file format, share codes, autoload per account.
-- [README: Icons](Readme.MD#icons) and [Fonts](Readme.MD#fonts).
+- Icons use Lucide names or supported custom assets. Optional custom fonts need file and custom-asset APIs; see `Library:LoadFont` in the source.
 
-## KawiXD factories and defaults
+## Aqua Hub factories and defaults
 
-- `Library:CreateKawiXDWindow(options)` calls native `CreateWindow` and attaches the appearance methods. Defaults injected when absent: `Name = "KawiXD"`, `DefaultTheme = "Null Fire"` (only if neither `Theme` nor `DefaultTheme` is supplied), and `ConfigurationSaving = { Enabled = false, FolderName = "KawiXD" }`.
-- `Library:CreateNullFireWindow(options)` is an alias. `Library.KawiXD` and `Library.NullFire` are the same metadata table (`Version = "1.0.0"`, `AppearanceVersion = 1`).
-- Native `Library:CreateWindow(options)` remains available, defaults its title/config folder to `KawiXD`, and does NOT attach appearance methods or inject `Null Fire`. A fresh library starts with `Midnight`; an existing library theme/script default and a saved player default can change it. Do not claim these two factories have identical theme defaults.
-- `CreateKawiXDWindow` supplies a disabled configuration option by default. **The source never reads `ConfigurationSaving.Enabled`: `Enabled = false` does not disable file operations or hidden size flags.** For native configs, select `FolderName`, use flags and `CreateConfigManager`, and call `LoadAutoload`. Do not confuse explicit appearance export with native config persistence.
+- `Library:CreateAquaHubWindow(options)` calls native `CreateWindow` and attaches appearance methods. Defaults: title `Aqua Hub`, subtitle `by von63rd`, `DefaultTheme = "Aqua"` when no theme is supplied, and `ConfigurationSaving = { Enabled = false, FolderName = "AquaHub" }` when absent. An explicit `Title` is respected as well as `Name`.
+- Legacy `CreateKawiXDWindow` and `CreateNullFireWindow` are aliases of the new factory. `Library.AquaHub` (also exposed through legacy metadata aliases) reports `Name = "Aqua Hub"`, `Author = "von63rd"`, `Version = "1.1.0"`, `AppearanceVersion = 1`.
+- Native `Library:CreateWindow(options)` is still available. It defaults to title `Aqua Hub`, subtitle `by von63rd`, config folder `AquaHub`, and a fresh blue `Aqua` palette, but does not attach the appearance methods. Prior library themes and a saved player default can affect its palette. The enhanced factory explicitly requests `Aqua` unless overridden; saved player defaults still take precedence.
+- **The source does not enforce `ConfigurationSaving.Enabled`: `Enabled = false` does not disable native file operations, asset caching or hidden size flags.** Use `FolderName`, flags, `CreateConfigManager` and explicit `LoadAutoload` for native persistence. Appearance export is explicit and distinct from native config persistence.
+- The default in-game hub logo is `rbxassetid://89294804014911` (`Library.Assets.Logo`). It is not recolored by the theme. The supplied Discord-server PNG is displayed directly in the README via a GitHub release asset, without adding a fifth root file.
 
-## Null Fire appearance extension
+## Aqua appearance extension
 
-Native presets remain available. Additional presets: `Null Fire` (pink), `Null Ice` (cyan), `Null Mono`.
+Native presets remain available. The default `Aqua` preset uses cyan-blue #38BDF8 on navy #07111F. Additional presets: `Aqua Ice` and `Aqua Mono`. Historical preset names are privately mapped to these names rather than shown as old brands in theme menus.
 
 `Library:RegisterTheme(name, palette) -> true | false, error`: a nonblank name of at most 64 characters and at least one native palette key. Values are `Color3` or six-digit hex strings (optional `#`); omitted keys inherit the current theme. Use `Library:SetTheme(name)` to apply it.
 
-On a window from `CreateKawiXDWindow`:
+On a window from `CreateAquaHubWindow`:
 
 - `Window:SetBackgroundStyle(options) -> true | false, error`: `{ Source, Transparency, Tint, ScaleType, TileSize, Dim }`. Source is a preset, accessible asset ID, supported URL/file, or `"None"`; `false`/empty also clears. `Transparency` and `Dim` are 0..1; `Tint` is Color3/hex; `ScaleType` is `"Crop"`, `"Fit"`, `"Tile"`, or `"Stretch"`; `TileSize = { X, Y }` with dimensions 1..4096. Partial updates preserve omitted fields. Invalid/unresolved sources preserve the previous background. Actual asset display still depends on permissions and image availability.
 - `Window:GetBackgroundStyle()` returns a detached normalized table, including hex `Tint`.
@@ -164,11 +165,11 @@ Profiles do not automatically save to disk or include control flags/gameplay sta
 
 ## Attribution and distribution
 
-The Airflow-derived native API is preserved; KawiXD adds branding and the Null Fire appearance extension. Exactly four root files are distributed: `Source.lua`, `Example.lua`, `Readme.MD`, `llms.txt`. Do not reference a bundled docs site, source tree, build scripts, or extra asset folders. See Readme.MD for attribution and the existing license text. Native icons, fonts, images and some Home features can access external resources when used.
+The native API is preserved; Aqua Hub by von63rd adds blue branding and the appearance extension. Exactly four root files are distributed: `Source.lua`, `Example.lua`, `Readme.MD`, `llms.txt`. Do not reference a bundled docs site, source tree, build scripts, or extra asset folders. See Readme.MD for attribution and the existing license text. Native icons, fonts, images and some Home features can access external resources when used.
 
 ## Extended UI API: source-exact rules
 
-Read [the README extended index](Readme.MD#extended-api-index) for full signatures, option aliases, manager handles, return types, and corner cases. Do not invent getters/setters from symmetry.
+Use the readable source for full signatures, option aliases and rare corner cases; the notes below summarize the supported handles. Do not invent getters/setters from symmetry.
 
 ### Library and window details
 
@@ -181,7 +182,7 @@ Read [the README extended index](Readme.MD#extended-api-index) for full signatur
 - `Window:Notify(opts)` returns a handle with `Dismiss()`. `Dialog`/`Confirm` return a dialog handle with `Close()`. Do not assume these are value controls.
 - `SetBackdrop(enabled)` and `SetDim(enabled)` are boolean switches, not option tables or amounts. `SetBackdropTint(n)` clamps 0..1. `SetWeatherMode` accepts UI/Window/Inside (case-insensitive) for UI, otherwise Screen. Weather canonical values are Rain/Snow/Ember/Sakura/Fireflies/Matrix with documented aliases; `None`/other unrecognized names stop particles. `SetWeatherDensity` clamps 0..3 and `SetWeatherSpeed` clamps 0.1..3.
 - `Window:SetIgnoreFlags(array)` accumulates ignored names. `SetLoadingOrder(arrayOrNil)` overrides/restores type ordering; default Library.LoadingOrder is Dropdown, Slider, Stepper, Input, ColorPicker, Keybind, Toggle. Config setters run on deferred threads. `OnConfigChanged(fn)` returns a disconnect function.
-- Config APIs include ConfigExists, SaveConfig, LoadConfig, DeleteConfig, RenameConfig, ListConfigs, ResetConfig, ClearWorkspace, ExportConfig, DecodeConfig, ImportConfig, Get/SetAutoloadMode, Get/SetAutoload, Get/SetMinimizeOnStart, LoadAutoload. `ClearWorkspace` deletes the config folder. `LoadAutoload` is guarded against running twice. `ExportConfig` emits JSON; `DecodeConfig` also accepts legacy airflow base64. `ImportConfig(code,saveAs?,force?)` returns true,nil,savedName or false,error; without saveAs it applies only.
+- Config APIs include ConfigExists, SaveConfig, LoadConfig, DeleteConfig, RenameConfig, ListConfigs, ResetConfig, ClearWorkspace, ExportConfig, DecodeConfig, ImportConfig, Get/SetAutoloadMode, Get/SetAutoload, Get/SetMinimizeOnStart, LoadAutoload. `ClearWorkspace` deletes the config folder. `LoadAutoload` is guarded against running twice. `ExportConfig` emits JSON; `DecodeConfig` also accepts legacy prefixed base64. `ImportConfig(code,saveAs?,force?)` returns true,nil,savedName or false,error; without saveAs it applies only.
 - `Window:SaveTheme`, `LoadTheme`, `DeleteTheme`, `ListThemes`, `SetDefaultTheme`, `GetDefaultTheme`, `SetBackground`, `GetBackground`, `SetBackgroundTransparency`, and `ListBackgrounds` remain native. The window default-theme setter takes a name; the library setter also accepts a palette table/nil.
 
 ### Containers and compatibility
@@ -203,4 +204,4 @@ Groupboxes expose PopOut, Dock, IsPoppedOut, SetCollapsed, Collapse, Expand, IsC
 
 ### Documentation visuals
 
-README icons use the Lucide collection via Iconify; the animated headline is an externally hosted SVG image, not executable README code or proof of a runtime test. No fifth repository file or bundled docs site is required.
+The README displays the supplied original logo from a GitHub release asset. No fifth repository file or bundled docs site is required. Compilation and targeted mock regressions are not proof of an in-game runtime test.
